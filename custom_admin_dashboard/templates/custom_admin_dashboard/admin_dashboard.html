@@ -1,0 +1,22 @@
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %} {% block title %}Admin Dashboard{% endblock %} 
+{% block content %}
+<h2>Admin Dashboard</h2>
+<ul>
+  <li>
+    <a href="{% url 'custom_admin_dashboard:admin_departments' %}"
+      >Manage Departments</a
+    >
+  </li>
+  <li>
+    <a href="{% url 'custom_admin_dashboard:admin_folders' %}"
+      >Manage Folders</a
+    >
+  </li>
+  <li>
+    <a href="{% url 'custom_admin_dashboard:admin_documents' %}"
+      >Manage Documents</a
+    >
+  </li>
+</ul>
+{% endblock %}

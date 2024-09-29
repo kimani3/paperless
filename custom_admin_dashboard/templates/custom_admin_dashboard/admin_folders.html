@@ -1,0 +1,32 @@
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %} {% block title %}Manage Folders{% endblock %} 
+ {% block content %}
+<h2>Manage Folders</h2>
+<a href="{% url 'custom_admin_dashboard:admin_add_folder' %}">Add New Folder</a>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Department</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for folder in folders %}
+    <tr>
+      <td>{{ folder.name }}</td>
+      <td>{{ folder.department.name }}</td>
+      <td>
+        <a href="{% url 'custom_admin_dashboard:admin_edit_folder' folder.id %}"
+          >Edit</a
+        >
+        <a
+          href="{% url 'custom_admin_dashboard:admin_delete_folder' folder.id %}"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

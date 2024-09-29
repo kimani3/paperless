@@ -1,0 +1,86 @@
+<!-- templates/documents/register.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 450px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333333;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      form input {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+      }
+
+      form button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      form button:hover {
+        background-color: #0056b3;
+      }
+
+      .error-message {
+        color: red;
+        text-align: center;
+        margin-bottom: 15px;
+      }
+
+      p {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Register</h1>
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% if form.non_field_errors %}
+      <div class="error-message">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <form method="post">
+        {% csrf_token %} {{ form.as_p }}
+        <button type="submit">Register</button>
+      </form>
+      <p>
+        Already have an account?
+        <a href="{% url 'documents:login' %}">Login here</a>.
+      </p>
+    </div>
+  </body>
+</html>

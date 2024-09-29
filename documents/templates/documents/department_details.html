@@ -1,0 +1,28 @@
+<!-- templates/documents/document_details.html -->
+<!-- prettier-ignore -->
+{% extends 'base.html' %}
+
+{% block title %}
+{{ department.name }}
+{% endblock %} {% block content %}
+<h3>Folders</h3>
+<ul>
+  {% for folder in folders %}
+  <li>
+    <a href="{% url 'documents:folder_detail' folder.id %}">
+      {{ folder.name }}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% if selected_folder %}
+<h3>Documents in "{{ selected_folder.name }}"</h3>
+<ul>
+  {% for document in selected_folder.documents %}
+  <li>{{ document.file_name }}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Select a folder to view the documents.</p>
+{% endif %} {% endblock %}

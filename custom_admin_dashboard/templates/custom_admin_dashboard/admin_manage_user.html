@@ -1,0 +1,43 @@
+<!-- manage_users.html -->
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %}
+{% block title %}Manage Users{% endblock %} 
+{% block content %}
+<h2>Manage Users</h2>
+<a
+  href="{% url 'custom_admin_dashboard:admin_add_user' %}"
+  class="btn btn-primary"
+  >Add User</a
+>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>
+        <a
+          href="{% url 'custom_admin_dashboard:admin_edit_user' user.id %}"
+          class="btn btn-warning"
+          >Edit</a
+        >
+        <a
+          href="{% url 'custom_admin_dashboard:admin_delete_user' user.id %}"
+          class="btn btn-danger"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

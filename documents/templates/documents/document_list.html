@@ -1,0 +1,16 @@
+<!-- templates/documents/document_list.html -->
+<!-- prettier-ignore -->
+{% extends 'base.html' %} {% block title %}Documents{% endblock %} 
+{% block content %}
+<h2>Documents</h2>
+<ul>
+  {% for document in documents %}
+  <li>
+    <a href="{% url 'documents:view_document' document.id %}"
+      >{{ document.file_name }}</a
+    >
+    (Created by {{ document.created_by }} on {{ document.created_at }})
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

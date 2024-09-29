@@ -1,0 +1,17 @@
+<!-- admin_add_user.html -->
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %} {% block title %}Add
+User{% endblock %} 
+{% block content %}
+<h2>Add User</h2>
+<form method="POST">
+  {% csrf_token %} {{ form.as_p }}
+  <!-- Render the form fields -->
+  <button type="submit" class="btn btn-primary">Add User</button>
+  <a
+    href="{% url 'custom_admin_dashboard:manage_users' %}"
+    class="btn btn-secondary"
+    >Cancel</a
+  >
+</form>
+{% endblock %}

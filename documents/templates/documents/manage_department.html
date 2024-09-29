@@ -1,0 +1,15 @@
+<!-- templates/documents/manage_department.html -->
+<!-- prettier-ignore -->
+{% extends 'base.html' %} {% block title %}Manage Departments{% endblock %} 
+{% block content %}
+<h2>Manage Departments</h2>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Add Department</button>
+</form>
+<ul>
+  {% for department in departments %}
+  <li>{{ department.name }} (Created by {{ department.created_by }})</li>
+  {% endfor %}
+</ul>
+{% endblock %}

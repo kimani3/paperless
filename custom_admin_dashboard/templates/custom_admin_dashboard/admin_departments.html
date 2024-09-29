@@ -1,0 +1,33 @@
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %} {% block title %}Manage Departments{% endblock %} 
+{% block content %}
+<h2>Manage Departments</h2>
+<a href="{% url 'custom_admin_dashboard:admin_add_department' %}"
+  >Add New Department</a
+>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for department in departments %}
+    <tr>
+      <td>{{ department.name }}</td>
+      <td>
+        <a
+          href="{% url 'custom_admin_dashboard:admin_edit_department' department.id %}"
+          >Edit</a
+        >
+        <a
+          href="{% url 'custom_admin_dashboard:admin_delete_department' department.id %}"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

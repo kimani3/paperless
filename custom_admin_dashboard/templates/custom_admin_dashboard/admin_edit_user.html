@@ -1,0 +1,17 @@
+<!-- admin_edit_user.html -->
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %} {% block title %}Edit
+User{% endblock %} 
+{% block content %}
+<h2>Edit User: {{ user.username }}</h2>
+<form method="POST">
+  {% csrf_token %} {{ form.as_p }}
+  <!-- Render the form fields -->
+  <button type="submit" class="btn btn-warning">Update User</button>
+  <a
+    href="{% url 'custom_admin_dashboard:manage_users' %}"
+    class="btn btn-secondary"
+    >Cancel</a
+  >
+</form>
+{% endblock %}

@@ -1,0 +1,79 @@
+<!-- prettier-ignore -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    {% comment %} You can include your custom CSS here
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}" />
+    {% endcomment %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a
+        class="navbar-brand"
+        href="{% url 'custom_admin_dashboard:admin_dashboard' %}"
+        >Admin Dashboard</a
+      >
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'documents:logout' %}">Logout</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="list-group">
+            <h5>Admin Navigation</h5>
+            <a
+              href="{% url 'custom_admin_dashboard:manage_users' %}"
+              class="list-group-item list-group-item-action"
+              >Manage Users</a
+            >
+            <a
+              href="{% url 'custom_admin_dashboard:admin_departments' %}"
+              class="list-group-item list-group-item-action"
+              >Manage Departments</a
+            >
+            <a
+              href="{% url 'custom_admin_dashboard:admin_documents' %}"
+              class="list-group-item list-group-item-action"
+              >Manage Documents</a
+            >
+            {% comment %}
+            <a
+              href="{% url 'custom_admin_dashboard:view_reports' %}"
+              class="list-group-item list-group-item-action"
+              >View Reports</a
+            >
+            <a
+              href="{% url 'custom_admin_dashboard:settings' %}"
+              class="list-group-item list-group-item-action"
+              >Settings</a
+            >
+            {% endcomment %}
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div class="content-area">{% block content %}{% endblock %}</div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Uncomment the following lines to include JavaScript files
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    {% endcomment %}
+  </body>
+</html>

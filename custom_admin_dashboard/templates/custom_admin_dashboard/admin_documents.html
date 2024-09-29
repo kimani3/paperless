@@ -1,0 +1,35 @@
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %} {% block title %}Manage Documents{% endblock %} 
+ {% block content %}
+<h2>Manage Documents</h2>
+<a href="{% url 'custom_admin_dashboard:admin_add_document' %}"
+  >Add New Document</a
+>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Folder</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for document in documents %}
+    <tr>
+      <td>{{ document.name }}</td>
+      <td>{{ document.folder.name }}</td>
+      <td>
+        <a
+          href="{% url 'custom_admin_dashboard:admin_edit_document' document.id %}"
+          >Edit</a
+        >
+        <a
+          href="{% url 'custom_admin_dashboard:admin_delete_document' document.id %}"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
