@@ -5,6 +5,7 @@ from documents.models import Department, Folder, Document
 from django.contrib.auth.models import User
 from .forms import DepartmentForm, FolderForm, DocumentForm, UserForm
 from django.db.models import Q
+from django.http import HttpResponse
 
 def admin_required(login_url=None):
     return user_passes_test(lambda u: u.is_superuser, login_url=login_url)
@@ -159,6 +160,14 @@ def admin_delete_document(request, document_id):
         messages.success(request, 'Document deleted successfully.')
         return redirect('custom_admin_dashboard:admin_documents')
     return render(request, 'custom_admin_dashboard/admin_delete_document.html', {'document': document})
+
+@login_required
+def view_document(request, document_id):
+    document = get_object_or_404(Document, id=document_id)
+    response = HttpResponse(document.file_content, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'inline; filename="{document.file_name}"'
+    return response
+
 
 # User Management Views
 @login_required

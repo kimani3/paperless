@@ -19,6 +19,7 @@ urlpatterns = [
     path('folders/edit/<int:folder_id>/', views.admin_edit_folder, name='admin_edit_folder'),
     path('folders/delete/<int:folder_id>/', views.admin_delete_folder, name='admin_delete_folder'),
     path('documents/', views.admin_documents, name='admin_documents'),
+    path('documents/<int:document_id>/', views.view_document, name='admin_view_document'),
     path('documents/add/', views.admin_add_document, name='admin_add_document'),
     path('documents/edit/<int:document_id>/', views.admin_edit_document, name='admin_edit_document'),
     path('documents/delete/<int:document_id>/', views.admin_delete_document, name='admin_delete_document'),    

@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block content %}
+{% extends "admin_base.html" %} {% block content %}
 <div class="container">
   <h2>Search Results for "{{ query }}"</h2>
 
@@ -7,7 +7,8 @@
   <ul>
     {% for department in departments %}
     <li>
-      <a href="{% url 'documents:department_detail' department.id %}"
+      <a
+        href="{% url 'custom_admin_dashboard:admin_edit_department' department.id %}"
         >{{ department.name }}</a
       >
     </li>
@@ -18,7 +19,7 @@
   <ul>
     {% for folder in folders %}
     <li>
-      <a href="{% url 'documents:folder_detail' folder.id %}"
+      <a href="{% url 'custom_admin_dashboard:admin_edit_folder' folder.id %}"
         >{{ folder.name }} ({{ folder.department.name }})</a
       >
     </li>
@@ -29,7 +30,8 @@
   <ul>
     {% for document in documents %}
     <li>
-      <a href="{% url 'documents:view_document' document.id %}"
+      <a
+        href="{% url 'custom_admin_dashboard:admin_view_document' document.id %}"
         >{{ document.file_name }} ({{ document.folder.name }} - {{
         document.folder.department.name }})</a
       >
