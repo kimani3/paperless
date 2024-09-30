@@ -55,20 +55,19 @@ def home(request):
     
     return render(request, 'base.html', context)
 
-@login_required
 def search(request):
     query = request.GET.get('q')
     departments = Department.objects.filter(name__icontains=query) if query else Department.objects.none()
     folders = Folder.objects.filter(Q(name__icontains=query) | Q(department__name__icontains=query)) if query else Folder.objects.none()
     documents = Document.objects.filter(Q(file_name__icontains=query) | Q(folder__name__icontains=query) | Q(folder__department__name__icontains=query)) if query else Document.objects.none()
-    
+
     context = {
         'query': query,
         'departments': departments,
         'folders': folders,
         'documents': documents,
     }
-    
+
     return render(request, 'documents/search_results.html', context)
 
 

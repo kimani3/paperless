@@ -2,8 +2,8 @@
 <div class="container">
   <h2>Search Results for "{{ query }}"</h2>
 
+  {% if departments or folders or documents %} {% if departments %}
   <h3>Departments</h3>
-  {% if departments %}
   <ul>
     {% for department in departments %}
     <li>
@@ -13,12 +13,8 @@
     </li>
     {% endfor %}
   </ul>
-  {% else %}
-  <p>No departments found.</p>
-  {% endif %}
-
+  {% endif %} {% if folders %}
   <h3>Folders</h3>
-  {% if folders %}
   <ul>
     {% for folder in folders %}
     <li>
@@ -28,22 +24,20 @@
     </li>
     {% endfor %}
   </ul>
-  {% else %}
-  <p>No folders found.</p>
-  {% endif %}
-
+  {% endif %} {% if documents %}
   <h3>Documents</h3>
-  {% if documents %}
   <ul>
     {% for document in documents %}
     <li>
-      {{ document.file_name }} ({{ document.folder.name }} - {{
-      document.folder.department.name }})
+      <a href="{% url 'documents:view_document' document.id %}"
+        >{{ document.file_name }} ({{ document.folder.name }} - {{
+        document.folder.department.name }})</a
+      >
     </li>
     {% endfor %}
   </ul>
-  {% else %}
-  <p>No documents found.</p>
+  {% endif %} {% else %}
+  <p>No results found.</p>
   {% endif %}
 </div>
 {% endblock %}
