@@ -4,6 +4,7 @@ from django.contrib import messages
 from documents.models import Department, Folder, Document
 from django.contrib.auth.models import User
 from .forms import DepartmentForm, FolderForm, DocumentForm, UserForm
+from django.db.models import Q
 
 def admin_required(login_url=None):
     return user_passes_test(lambda u: u.is_superuser, login_url=login_url)
@@ -18,6 +19,23 @@ def admin_dashboard(request):
 def admin_departments(request):
     departments = Department.objects.all()
     return render(request, 'custom_admin_dashboard/admin_departments.html', {'departments': departments})
+
+@login_required
+@admin_required(login_url='/login/')
+def search(request):
+    query = request.GET.get('q')
+    departments = Department.objects.filter(name__icontains=query) if query else Department.objects.none()
+    folders = Folder.objects.filter(Q(name__icontains=query) | Q(department__name__icontains=query)) if query else Folder.objects.none()
+    documents = Document.objects.filter(Q(file_name__icontains=query) | Q(folder__name__icontains=query) | Q(folder__department__name__icontains=query)) if query else Document.objects.none()
+    
+    context = {
+        'query': query,
+        'departments': departments,
+        'folders': folders,
+        'documents': documents,
+    }
+    
+    return render(request, 'custom_admin_dashboard/search_results.html', context)
 
 @login_required
 @admin_required(login_url='/login/')

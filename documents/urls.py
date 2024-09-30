@@ -17,5 +17,7 @@ urlpatterns = [
     path('documents/<int:document_id>/', views.view_document, name='view_document'),
     path('departments/', views.department_list, name='department_list'),
     path('departments/<int:department_id>/', views.department_detail, name='department_detail'),  # New path for detail view
+    path('search/', views.search, name='search'),  # Path for search view
 ]
+
 

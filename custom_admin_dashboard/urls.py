@@ -21,5 +21,6 @@ urlpatterns = [
     path('documents/', views.admin_documents, name='admin_documents'),
     path('documents/add/', views.admin_add_document, name='admin_add_document'),
     path('documents/edit/<int:document_id>/', views.admin_edit_document, name='admin_edit_document'),
-    path('documents/delete/<int:document_id>/', views.admin_delete_document, name='admin_delete_document'),
+    path('documents/delete/<int:document_id>/', views.admin_delete_document, name='admin_delete_document'),    
+    path('search/', views.search, name='search'),  # Path for search view
 ]

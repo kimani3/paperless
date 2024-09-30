@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <h2>Search Results for "{{ query }}"</h2>
+
+  <h3>Departments</h3>
+  {% if departments %}
+  <ul>
+    {% for department in departments %}
+    <li>
+      <a href="{% url 'documents:department_detail' department.id %}"
+        >{{ department.name }}</a
+      >
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No departments found.</p>
+  {% endif %}
+
+  <h3>Folders</h3>
+  {% if folders %}
+  <ul>
+    {% for folder in folders %}
+    <li>
+      <a href="{% url 'documents:folder_detail' folder.id %}"
+        >{{ folder.name }} ({{ folder.department.name }})</a
+      >
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No folders found.</p>
+  {% endif %}
+
+  <h3>Documents</h3>
+  {% if documents %}
+  <ul>
+    {% for document in documents %}
+    <li>
+      {{ document.file_name }} ({{ document.folder.name }} - {{
+      document.folder.department.name }})
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No documents found.</p>
+  {% endif %}
+</div>
+{% endblock %}

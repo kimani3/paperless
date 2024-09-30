@@ -1,9 +1,9 @@
-<!-- templates/base.html -->
-{% comment %} <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>{% block title %}Document Management{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Document Management System{% endblock %}</title>
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
@@ -11,9 +11,13 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">DocManage</a>
+      <a
+        class="navbar-brand"
+        href="{% if user.is_superuser %}{% url 'custom_admin_dashboard:admin_dashboard' %}{% else %}{% url 'documents:home' %}{% endif %}"
+        >Document Management</a
+      >
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <a class="nav-link" href="{% url 'documents:upload_document' %}"
               >Upload Document</a
@@ -36,59 +40,23 @@
             >
           </li>
           {% endif %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'documents:logout' %}">Logout</a>
-          </li>
         </ul>
-      </div>
-    </nav>
-    <div class="container mt-4">
-      {% if messages %} {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-      {% endfor %} {% endif %} {% block content %}
-      <div class="jumbotron mt-4">
-        <h1 class="display-4">Welcome to DocManage!</h1>
-        <p class="lead">
-          Your document management system to organize and store files
-          effectively.
-        </p>
-        <hr class="my-4" />
-        <p>
-          Click the button below to get started with uploading documents or
-          managing folders.
-        </p>
-        <a
-          class="btn btn-primary btn-lg"
-          href="{% url 'documents:upload_document' %}"
-          role="button"
-          >Upload Document</a
+        <form
+          class="form-inline my-2 my-lg-0"
+          method="get"
+          action="{% url 'documents:search' %}"
         >
-      </div>
-      {% endblock %}
-    </div>
-  </body>
-</html>
-{% endcomment %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Document Management System{% endblock %}</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a
-        class="navbar-brand"
-        href="{% if user.is_superuser %}{% url 'custom_admin_dashboard:admin_dashboard' %}{% else %}{% url 'documents:home' %}{% endif %}"
-        >Document Management</a
-      >
-
-      <div class="collapse navbar-collapse" id="navbarNav">
+          <input
+            class="form-control mr-sm-2"
+            type="text"
+            name="q"
+            placeholder="Search..."
+            required
+          />
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+            Search
+          </button>
+        </form>
         <ul class="navbar-nav ml-auto">
           {% if user.is_authenticated %}
           <li class="nav-item">
