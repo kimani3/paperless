@@ -1,17 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from .models import Department, Folder, Document
 from .forms import DocumentForm, FolderForm, DepartmentForm, RegistrationForm, LoginForm
 from datetime import date
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Q
-import mimetypes
+
 import base64
 import os
-from docx import Document as DocxDocument  # Ensure you install python-docx
-from io import BytesIO
+
+
 
 def register(request):
     if request.method == 'POST':
@@ -110,12 +110,14 @@ def view_document_content(request, document_id):
         'is_docx': is_docx,
     })
 
+
 @login_required
 def view_document(request, document_id):
     document = get_object_or_404(Document, id=document_id)
     response = HttpResponse(document.file_content, content_type='application/octet-stream')
     response['Content-Disposition'] = f'inline; filename="{document.file_name}"'
     return response
+
 
 @login_required
 def upload_document(request, department_id=None, folder_id=None):

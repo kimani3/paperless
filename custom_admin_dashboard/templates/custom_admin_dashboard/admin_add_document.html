@@ -1,9 +1,20 @@
 <!-- prettier-ignore -->
 {% extends 'admin_base.html' %} {% block title %}Add Document{% endblock %} 
- {% block content %}
-<h2>Add Document</h2>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Add Document</button>
-</form>
+{% block content %}
+<div class="container">
+  <h2>Upload Document</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %} {{ form.as_p }}
+    <div class="form-group">
+      <label for="id_file_content">File:</label>
+      <input
+        type="file"
+        name="file_content"
+        accept="application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
 {% endblock %}

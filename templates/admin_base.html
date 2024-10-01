@@ -1,4 +1,4 @@
-<!-- prettier-ignore -->
+<!-- admin_base.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -69,22 +69,20 @@
               class="list-group-item list-group-item-action"
               >Manage Documents</a
             >
-            {% comment %}
             <a
-              href="{% url 'custom_admin_dashboard:view_reports' %}"
+              href="{% url 'custom_admin_dashboard:admin_folders' %}"
               class="list-group-item list-group-item-action"
-              >View Reports</a
+              >Manage Folders</a
             >
-            <a
-              href="{% url 'custom_admin_dashboard:settings' %}"
-              class="list-group-item list-group-item-action"
-              >Settings</a
-            >
-            {% endcomment %}
+            <!-- New link -->
           </div>
         </div>
         <div class="col-md-9">
-          <div class="content-area">{% block content %}{% endblock %}</div>
+          <div class="content-area">
+            {% if messages %} {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %} {% endif %} {% block content %}{% endblock %}
+          </div>
         </div>
       </div>
     </div>

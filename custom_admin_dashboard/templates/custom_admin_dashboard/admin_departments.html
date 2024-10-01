@@ -18,6 +18,10 @@
       <td>{{ department.name }}</td>
       <td>
         <a
+          href="{% url 'custom_admin_dashboard:admin_view_department' department.id %}"
+          >View</a
+        >
+        <a
           href="{% url 'custom_admin_dashboard:admin_edit_department' department.id %}"
           >Edit</a
         >

@@ -1,0 +1,22 @@
+<!-- templates/custom_admin_dashboard/admin_view_folder.html -->
+<!-- prettier-ignore -->
+{% extends 'admin_base.html' %} 
+{% block title %}Folders{% endblock %} 
+{% block content %}
+<h2>Folders in {{ department.name }}</h2>
+<!-- Display the department name -->
+<ul>
+  {% for folder in folders %}
+  <li>
+    <a href="{% url 'custom_admin_dashboard:admin_open_folder' folder.id %}"
+      >{{ folder.name }}</a
+    >
+    (Department: {{ folder.department.name }}, Created by {{ folder.created_by
+    }} on {{ folder.created_at }})
+  </li>
+  {% empty %}
+  <li>No folders found in this department.</li>
+  <!-- Message if no folders exist -->
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -19,22 +19,11 @@ class FolderForm(forms.ModelForm):
         fields = ['name', 'department']
 
 class DocumentForm(forms.ModelForm):
-    # Create a file field for uploading files
-    file = forms.FileField(label='Upload File')
-
     class Meta:
         model = Document
-        fields = ['file_name', 'folder', 'file']  # Exclude 'file_content'
-
-    def save(self, commit=True):
-        # Override the save method to handle the file upload
-        document = super().save(commit=False)
-        uploaded_file = self.cleaned_data.get('file')
-        
-        if uploaded_file:
-            # Save the uploaded file as binary content
-            document.file_content = uploaded_file.read()
-        
-        if commit:
-            document.save()
-        return document
+        fields = ['file_name']  # Include the necessary fields
+        widgets = {
+            'file_content': forms.ClearableFileInput(attrs={
+                'accept': 'application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            }),
+        }

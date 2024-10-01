@@ -85,7 +85,11 @@
             {% endfor %}
           </div>
         </div>
-        <div class="col-md-9">{% block content %}{% endblock %}</div>
+        <div class="col-md-9">
+          {% if messages %} {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %} {% endif %} {% block content %}{% endblock %}
+        </div>
       </div>
     </div>
     {% comment %}
