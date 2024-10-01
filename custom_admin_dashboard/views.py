@@ -101,11 +101,16 @@ def admin_delete_department(request, department_id):
     return render(request, 'custom_admin_dashboard/admin_delete_department.html', {'department': department})
 
 
-# folder management
 @login_required
 @admin_required(login_url='/login/')
 def admin_view_folder(request, folder_id):
     folder = get_object_or_404(Folder, id=folder_id)
+    
+    # Ensure the folder has an associated department
+    if folder.department is None:
+        messages.error(request, 'This folder does not belong to any department.')
+        return redirect('custom_admin_dashboard:admin_folders')  # Redirect to the folder list or any relevant page
+    
     documents = folder.documents.all()  # Fetch documents related to the folder
     department_id = folder.department.id  # Get the department ID
     return render(request, 'custom_admin_dashboard/admin_view_document.html', {
@@ -113,6 +118,7 @@ def admin_view_folder(request, folder_id):
         'documents': documents,
         'department_id': department_id,  # Pass department ID to the template
     })
+
 
 
 @login_required
@@ -190,22 +196,13 @@ def admin_add_document(request, department_id=None, folder_id=None):
                 file_extension = os.path.splitext(uploaded_file.name)[1]
                 document.file_extension = file_extension
 
-                if folder_id:  # If folder_id is provided, link to that folder
-                    folder = get_object_or_404(Folder, id=folder_id)
-                    document.folder = folder
-                elif department_id:  # Otherwise, link to a new folder in the specified department
-                    department = get_object_or_404(Department, id=department_id)
-                    folder_name = date.today().strftime('%Y-%m-%d')
-                    folder, created = Folder.objects.get_or_create(name=folder_name, department=department)
-                    document.folder = folder
-                else:
-                    messages.error(request, 'Neither department nor folder provided.')
-                    return redirect('documents:some_error_page')  # Redirect to an error page or list
+                folder = get_object_or_404(Folder, id=folder_id)
+                document.folder = folder  # Assign folder
 
                 # Save the document instance
                 document.save()
                 messages.success(request, 'Document uploaded successfully.')
-                return redirect('custom_admin_dashboard:admin_view_folder', folder.id)  # Redirect to the folder view
+                return redirect('custom_admin_dashboard:admin_view_folder', folder.id)
             else:
                 messages.error(request, 'No file uploaded.')
         else:

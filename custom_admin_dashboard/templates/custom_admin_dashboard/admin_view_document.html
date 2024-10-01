@@ -1,19 +1,25 @@
 <!-- templates/custom_admin_dashboard/admin_view_document.html -->
 <!-- prettier-ignore -->
-{% extends 'admin_base.html' %} 
-{% block title %}Documents{% endblock %} 
+{% extends 'admin_base.html' %}
+{% block title %}Documents{% endblock %}
 {% block content %}
 <h2>Documents in {{ folder.name }}</h2>
 <!-- Display the folder name -->
 
 <!-- Button to upload a document -->
 <div style="text-align: right">
+  {% if folder.department %}
   <a
-    href="{% url 'custom_admin_dashboard:admin_add_document' department_id=department_id folder_id=folder.id %}"
+    href="{% url 'custom_admin_dashboard:admin_add_document' department_id=folder.department.id folder_id=folder.id %}"
     class="btn btn-primary"
   >
     Upload Document
   </a>
+  {% else %}
+  <button class="btn btn-secondary" disabled>
+    Upload Document (No Department Assigned)
+  </button>
+  {% endif %}
 </div>
 
 <ul>
