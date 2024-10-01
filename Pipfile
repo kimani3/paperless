@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 django = "*"
+python-docx = "*"
 
 [dev-packages]
 

@@ -25,6 +25,7 @@ class Folder(models.Model):
 class Document(models.Model):
     file_name = models.CharField(max_length=255)
     file_content = models.BinaryField()
+    file_extension = models.CharField(max_length= 255)
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='documents', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='documents_created')
@@ -33,13 +34,4 @@ class Document(models.Model):
     def __str__(self):
         return f"{self.file_name} ({self.folder.name})"
 
-    def assign_default_folder(self, user):
-        if not self.folder:
-            today_str = date.today().strftime('%Y-%m-%d')
-            folder, created = Folder.objects.get_or_create(name=today_str, created_by=user)
-            if created:
-                # You may want to associate a default department if necessary
-                department = Department.objects.first()  # Example, or handle this logic as needed
-                folder.department = department
-                folder.save()
-            self.folder = folder
+

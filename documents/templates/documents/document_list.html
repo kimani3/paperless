@@ -1,14 +1,26 @@
 <!-- templates/documents/document_list.html -->
 <!-- prettier-ignore -->
-{% extends 'base.html' %} {% block title %}Documents{% endblock %} 
+{% extends 'base.html' %} 
+{% block title %}Documents{% endblock %} 
 {% block content %}
 <h2>Documents</h2>
+
+<!-- Button to upload a document -->
+<div style="text-align: right">
+  <a
+    href="{% url 'documents:upload_document' department_id=department_id folder_id=folder.id %}"
+    class="btn btn-primary"
+  >
+    Upload Document
+  </a>
+</div>
+
 <ul>
   {% for document in documents %}
   <li>
-    <a href="{% url 'documents:view_document' document.id %}"
-      >{{ document.file_name }}</a
-    >
+    <a href="{% url 'documents:view_document_content' document.id %}">
+      {{ document.file_name }}
+    </a>
     (Created by {{ document.created_by }} on {{ document.created_at }})
   </li>
   {% endfor %}

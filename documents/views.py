@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from .models import Department, Folder, Document
 from .forms import DocumentForm, FolderForm, DepartmentForm, RegistrationForm, LoginForm
 from datetime import date
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Q
-
+import mimetypes
+import base64
+import os
+from docx import Document as DocxDocument  # Ensure you install python-docx
+from io import BytesIO
 
 def register(request):
     if request.method == 'POST':
@@ -72,24 +76,91 @@ def search(request):
 
 
 @login_required
+def view_document_content(request, document_id):
+    document = get_object_or_404(Document, id=document_id)
+
+    # Decode the base64 encoded file content
+    file_content = base64.b64decode(document.file_content)
+
+    # Set the content type based on the file extension
+    content_type = 'application/octet-stream'
+    is_pdf = False
+    is_image = False
+    is_docx = False
+
+    if document.file_extension == '.pdf':
+        content_type = 'application/pdf'
+        is_pdf = True
+    elif document.file_extension in ['.jpg', '.jpeg', '.png']:
+        content_type = 'image/jpeg'
+        is_image = True
+    elif document.file_extension == '.docx':
+        content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        is_docx = True
+
+    # Encode the file content in base64 to use in the iframe source
+    base64_file_content = base64.b64encode(file_content).decode('utf-8')
+
+    return render(request, 'documents/document_content.html', {
+        'document': document,
+        'file_content': base64_file_content,
+        'content_type': content_type,
+        'is_pdf': is_pdf,
+        'is_image': is_image,
+        'is_docx': is_docx,
+    })
+
+@login_required
+def view_document(request, document_id):
+    document = get_object_or_404(Document, id=document_id)
+    response = HttpResponse(document.file_content, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'inline; filename="{document.file_name}"'
+    return response
+
+@login_required
 def upload_document(request, department_id=None, folder_id=None):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            document = form.save(commit=False)
-            if folder_id:
-                folder = get_object_or_404(Folder, id=folder_id)
-                document.folder = folder
+            document = form.save(commit=False)  # Save the document instance without committing
+
+            # Get the uploaded file from the form
+            uploaded_file = request.FILES.get('file_content')  # Access the file from request.FILES
+
+            if uploaded_file:
+                # Read the file data
+                document_data = uploaded_file.read()  # Read the binary content of the uploaded file
+                
+                # Encode the file content
+                document.file_content = base64.b64encode(document_data)  # Encode and assign it to the document
+
+                # Assign the current user to the created_by field
+                document.created_by = request.user
+
+                # Get the file extension and ensure it includes the leading dot
+                file_extension = os.path.splitext(uploaded_file.name)[1]
+                document.file_extension = file_extension
+
+                if folder_id:
+                    folder = get_object_or_404(Folder, id=folder_id)
+                    document.folder = folder
+                else:
+                    department = get_object_or_404(Department, id=department_id)
+                    folder_name = date.today().strftime('%Y-%m-%d')
+                    folder, created = Folder.objects.get_or_create(name=folder_name, department=department)
+                    document.folder = folder
+
+                # Save the document instance
+                document.save()
+                messages.success(request, 'Document uploaded successfully.')
+                return redirect('documents:folder_detail', folder.id if folder_id else folder.id)
             else:
-                department = get_object_or_404(Department, id=department_id)
-                folder_name = date.today().now().strftime('%Y-%m-%d')
-                folder, created = Folder.objects.get_or_create(name=folder_name, department=department)
-                document.folder = folder
-            document.save()
-            messages.success(request, 'Document uploaded successfully.')
-            return redirect('documents:folder_detail', folder.id if folder_id else folder.id)
+                messages.error(request, 'No file uploaded.')
+        else:
+            messages.error(request, 'Form is not valid.')
     else:
         form = DocumentForm()
+
     return render(request, 'documents/upload_document.html', {'form': form})
 
 
@@ -131,23 +202,19 @@ def folder_list(request):
     folders = Folder.objects.all()
     return render(request, 'documents/folder_list.html', {'folders': folders})
 
+@login_required
 def folder_detail(request, folder_id):
     folder = get_object_or_404(Folder, id=folder_id)
-    documents = Document.objects.filter(folder=folder)
-    return render(request, 'documents/document_details.html', {
-        'department': folder.department,
-        'folders': Folder.objects.filter(department=folder.department),
-        'selected_folder': folder,  # Pass the selected folder
-        'documents': documents,  # You can also include documents if needed
+    department_id = folder.department.id  # Assuming Folder has a ForeignKey to Department
+
+    documents = Document.objects.filter(folder=folder)  # Fetch documents in the folder
+
+    return render(request, 'documents/document_list.html', {
+        'documents': documents,
+        'department_id': department_id,
+        'folder': folder,  # Pass folder for ID
     })
 
-
-@login_required
-def view_document(request, document_id):
-    document = get_object_or_404(Document, id=document_id)
-    response = HttpResponse(document.file_content, content_type='application/octet-stream')
-    response['Content-Disposition'] = f'inline; filename="{document.file_name}"'
-    return response
 
 @login_required
 def department_list(request):

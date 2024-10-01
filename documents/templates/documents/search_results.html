@@ -29,7 +29,7 @@
   <ul>
     {% for document in documents %}
     <li>
-      <a href="{% url 'documents:view_document' document.id %}"
+      <a href="{% url 'documents:view_document_content' document.id %}"
         >{{ document.file_name }} ({{ document.folder.name }} - {{
         document.folder.department.name }})</a
       >

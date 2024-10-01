@@ -27,17 +27,12 @@ class LoginForm(forms.Form):
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['file_name', 'folder']  # Removed file_content from fields
-
-    file_content = forms.FileField()  # Still include this for file uploads
-
-    def save(self, commit=True):
-        instance = super(DocumentForm, self).save(commit=False)
-        file = self.cleaned_data['file_content']
-        instance.file_content = file.read()  # Read the file content
-        if commit:
-            instance.save()
-        return instance
+        fields = ['file_name']  # Include the necessary fields
+        widgets = {
+            'file_content': forms.ClearableFileInput(attrs={
+                'accept': 'application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            }),
+        }
 
 class FolderForm(forms.ModelForm):
     class Meta:
