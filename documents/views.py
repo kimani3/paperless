@@ -57,7 +57,11 @@ def home(request):
         'messages': messages.get_messages(request),  # If using Django messages framework
     }
     
-    return render(request, 'base.html', context)
+    return render(request, 'documents/documents_dashboard.html', context)
+
+@login_required
+def doc_dashboard(request):
+    return render(request, 'documents/admin_dashboard.html')
 
 def search(request):
     query = request.GET.get('q')

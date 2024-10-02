@@ -17,25 +17,6 @@
         >Document Management</a
       >
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'documents:folder_list' %}"
-              >Folders</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'documents:document_list' %}"
-              >Documents</a
-            >
-          </li>
-          {% if user.is_superuser %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'documents:manage_department' %}"
-              >Manage Departments</a
-            >
-          </li>
-          {% endif %}
-        </ul>
         <form
           class="form-inline my-2 my-lg-0"
           method="get"
