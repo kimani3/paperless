@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from documents.models import Department, Folder, Document
+from documents.models import Department, Folder, Document, CustomUser
 from django.contrib.auth.models import User
-from .forms import DepartmentForm, FolderForm, DocumentForm, UserForm
+from .forms import DepartmentForm, FolderForm, DocumentForm, RegistrationForm
 from django.db.models import Q
 from django.http import HttpResponse
 import base64
@@ -280,50 +280,50 @@ def admin_view_document_content(request, document_id):
     })
 
 
-# User Management Views
 @login_required
 @admin_required(login_url='/login/')
 def manage_users(request):
-    users = User.objects.all()
+    users = CustomUser.objects.all()  # Change this to CustomUser
     return render(request, 'custom_admin_dashboard/admin_manage_user.html', {'users': users})
 
 @login_required
 @admin_required(login_url='/login/')
 def admin_add_user(request):
     if request.method == 'POST':
-        form = UserForm(request.POST)
+        form = RegistrationForm(request.POST)  # Use your RegistrationForm
         if form.is_valid():
             form.save()
             messages.success(request, 'User added successfully.')
             return redirect('custom_admin_dashboard:manage_users')
     else:
-        form = UserForm()
+        form = RegistrationForm()
     return render(request, 'custom_admin_dashboard/admin_add_user.html', {'form': form})
 
 @login_required
 @admin_required(login_url='/login/')
 def admin_edit_user(request, user_id):
-    user = get_object_or_404(User, id=user_id)
+    user = get_object_or_404(CustomUser, id=user_id)  # Change this to CustomUser
     if request.method == 'POST':
-        form = UserForm(request.POST, instance=user)
+        form = RegistrationForm(request.POST, instance=user)  # Use your RegistrationForm
         if form.is_valid():
             form.save()
             messages.success(request, 'User updated successfully.')
             return redirect('custom_admin_dashboard:manage_users')
     else:
-        form = UserForm(instance=user)
+        form = RegistrationForm(instance=user)
     return render(request, 'custom_admin_dashboard/admin_edit_user.html', {'form': form, 'user': user})
+
+
 
 @login_required
 @admin_required(login_url='/login/')
 def admin_delete_user(request, user_id):
-    user = get_object_or_404(User, id=user_id)
+    user = get_object_or_404(CustomUser, id=user_id)  # Change this to CustomUser
     if request.method == 'POST':
         user.delete()
         messages.success(request, 'User deleted successfully.')
         return redirect('custom_admin_dashboard:manage_users')
     return render(request, 'custom_admin_dashboard/admin_delete_user.html', {'user': user})
-
 
 # folder management
 @login_required

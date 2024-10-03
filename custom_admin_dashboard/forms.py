@@ -1,12 +1,36 @@
 # custom_admin_dashboard/forms.py
 from django import forms
 from django.contrib.auth.models import User
-from documents.models import Department, Folder, Document
+from documents.models import Department, Folder, Document, CustomUser
 
-class UserForm(forms.ModelForm):
+class RegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    password_confirm = forms.CharField(widget=forms.PasswordInput)
+
     class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_active', 'is_superuser']  # Add any fields you need
+        model = CustomUser  # Change this to CustomUser
+        fields = ['username', 'email', 'department', 'is_superuser','is_active']  # Include the department field
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password_confirm = cleaned_data.get("password_confirm")
+
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError("Passwords do not match.")
+        
+
+class ResetPasswordForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput, label="New Password")
+    new_password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm New Password")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        new_password_confirm = cleaned_data.get("new_password_confirm")
+
+        if new_password and new_password_confirm and new_password != new_password_confirm:
+            raise forms.ValidationError("Passwords do not match.")
 
 class DepartmentForm(forms.ModelForm):
     class Meta:

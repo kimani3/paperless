@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
-from .models import Department, Folder, Document
+from .models import Department, Folder, Document, CustomUser
 from .forms import DocumentForm, FolderForm, DepartmentForm, RegistrationForm, LoginForm
 from datetime import date
 from django.contrib.auth import authenticate, login, logout
@@ -10,8 +10,6 @@ from django.db.models import Q
 
 import base64
 import os
-
-
 
 def register(request):
     if request.method == 'POST':
@@ -171,20 +169,6 @@ def upload_document(request, department_id=None, folder_id=None):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
-def manage_department(request):
-    if request.method == 'POST':
-        form = DepartmentForm(request.POST)
-        if form.is_valid():
-            department = form.save(commit=False)
-            department.created_by = request.user
-            department.save()
-            return redirect('documents:department_list')
-    else:
-        form = DepartmentForm()
-    return render(request, 'documents/manage_department.html', {'form': form})
-
-@login_required
 def create_folder(request):
     if request.method == 'POST':
         form = FolderForm(request.POST)
@@ -240,7 +224,6 @@ def department_detail(request, department_id):
         'folders': folders,
         'documents': documents,
     })
-
 
 
 def user_logout(request):

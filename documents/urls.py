@@ -10,7 +10,6 @@ urlpatterns = [
     path('accounts/login/', views.user_login, name='login'),
     path('accounts/logout/', views.user_logout, name='logout'),
     path('upload/<int:department_id>/<int:folder_id>/', views.upload_document, name='upload_document'),  # Updated URL
-    path('manage_department/', views.manage_department, name='manage_department'),
     path('create_folder/', views.create_folder, name='create_folder'),
     path('documents/', views.document_list, name='document_list'),
     path('folders/', views.folder_list, name='folder_list'),
