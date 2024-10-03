@@ -1,0 +1,23 @@
+/* search section */
+.search-container {
+  height: 100%;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.search-items img {
+  height: 35rem;
+}
+
+.search-details {
+  width: 20rem;
+  font-size: 1.5rem;
+}

@@ -1,0 +1,26 @@
+/* file section */
+
+.file-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+}
+
+.file-items {
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.file-items:hover {
+  color: white;
+  background-color: hsla(0, 0%, 77%, 0.5);
+}
+
+.file-details {
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}

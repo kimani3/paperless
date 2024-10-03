@@ -3,14 +3,26 @@
 {% extends 'base.html' %} {% block title %}Folder Details{% endblock %} {% block
 content %}
 <h2>Folder: {{ folder.name }}</h2>
-<ul>
   {% for document in documents %}
-  <li>
+  <div class="file-container">
     <a href="{% url 'documents:view_document' document.id %}"
-      >{{ document.file_name }}</a
-    >
-    (Created by {{ document.created_by }} on {{ document.created_at }})
-  </li>
+    >{{ document.file_name }}</a >
+      <div class="file-items">
+        <img
+          src="{% static 'images/doc.png' %}"
+          alt="empty_folder"
+          width="120rem"
+          height="135rem"
+        />
+        <div class="file-details">
+          <p>{{ document.file_name }}</p>
+          <p>{{ document.created_by }}</p>
+          <p>{{ document.created_at }}</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
   {% endfor %}
 </ul>
 {% endblock %}

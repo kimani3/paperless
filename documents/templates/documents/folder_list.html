@@ -1,17 +1,42 @@
 <!-- templates/documents/folder_list.html -->
 <!-- prettier-ignore -->
-{% extends 'base.html' %} {% block title %}Folders{% endblock %} 
-{% block content %}
-<h2>Folders</h2>
+
+{% extends 'base.html' %} 
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/svg.css' %}" />
+<link rel="stylesheet" href="{% static 'css/folders.css' %}" />
+{% endblock %}{% block title %}Folders{% endblock %} {% block content %} {% if
+folders %}
+<h3>Folders</h3>
 <ul>
   {% for folder in folders %}
-  <li>
-    <a href="{% url 'documents:folder_detail' folder.id %}"
-      >{{ folder.name }}</a
-    >
-    (Department: {{ folder.department.name }}, Created by {{ folder.created_by
-    }} on {{ folder.created_at }})
-  </li>
+  <div class="folder-container">
+    <a href="{% url 'documents:folder_detail' folder.id %}">
+      <div class="folder-items">
+        <img
+          src="{% static 'images/empty-folder.png' %}"
+          alt="empty_folder"
+          width="120rem"
+          height="135rem"
+        />
+        <div class="folder-details">
+          <p>{{ folder.name }}</p>
+          <p>{{ folder.created_at }}</p>
+          <p>{{ folder.created_by }}</p>
+        </div>
+      </div>
+    </a>
+  </div>
   {% endfor %}
 </ul>
-{% endblock %}
+{% endif %} {% else %}
+<div class="svg-container">
+  <div class="svg-items">
+    <img src="{% static 'images/No data-cuate.svg' %}" alt="Nothing found" />
+    <div class="svg-details">
+      <p>Ooops no Folders available at the moment</p>
+    </div>
+  </div>
+</div>
+{% endif %} {% endblock %}

@@ -1,18 +1,32 @@
 <!-- templates/documents/document_details.html -->
 <!-- prettier-ignore -->
 {% extends 'base.html' %}
-
-{% block title %}
-{{ department.name }}
-{% endblock %} {% block content %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/svg.css' %}" />
+<link rel="stylesheet" href="{% static 'css/folders.css' %}" />
+{% endblock %} {% block title %} {{ department.name }} {% endblock %} {% block
+content %}
 <h3>Folders</h3>
 <ul>
   {% for folder in folders %}
-  <li>
+  <div class="folder-container">
     <a href="{% url 'documents:folder_detail' folder.id %}">
-      {{ folder.name }}
+      <div class="folder-items">
+        <img
+          src="{% static 'images/empty-folder.png' %}"
+          alt="empty_folder"
+          width="120rem"
+          height="135rem"
+        />
+        <div class="folder-details">
+          <p>{{ folder.name }}</p>
+          <p>{{ folder.created_at }}</p>
+          <p>{{ folder.created_by }}</p>
+        </div>
+      </div>
     </a>
-  </li>
+  </div>
   {% endfor %}
 </ul>
 
@@ -20,7 +34,23 @@
 <h3>Documents in "{{ selected_folder.name }}"</h3>
 <ul>
   {% for document in selected_folder.documents %}
-  <li>{{ document.file_name }}</li>
+  <div class="file-container">
+    <a href="{% url 'documents:view_document_content' document.id %}">
+      <div class="file-items">
+        <img
+          src="{% static 'images/doc.png' %}"
+          alt="empty_folder"
+          width="120rem"
+          height="135rem"
+        />
+        <div class="file-details">
+          <p>{{ document.file_name }}</p>
+          <p>{{ document.created_by }}</p>
+          <p>{{ document.created_at }}</p>
+        </div>
+      </div>
+    </a>
+  </div>
   {% endfor %}
 </ul>
 {% else %}
