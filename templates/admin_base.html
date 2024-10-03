@@ -1,95 +1,126 @@
-<!-- admin_base.html -->
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Admin Dashboard{% endblock %}</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    {% comment %} You can include your custom CSS here
-    <link rel="stylesheet" href="{% static 'css/admin.css' %}" />
-    {% endcomment %}
+
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    {% block extra_css %}{% endblock %}
+    <title>{% block title %}Document Management System{% endblock %}</title>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <header>
       <a
-        class="navbar-brand"
-        href="{% url 'custom_admin_dashboard:admin_dashboard' %}"
-        >Admin Dashboard</a
+        href="{% if user.is_superuser %}{% url 'custom_admin_dashboard:admin_dashboard' %}{% else %}{% url 'documents:home' %}{% endif %}"
       >
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <form
-          class="form-inline my-2 my-lg-0"
-          method="get"
-          action="{% url 'custom_admin_dashboard:search' %}"
-        >
-          <input
-            class="form-control mr-sm-2"
-            type="text"
-            name="q"
-            placeholder="Search..."
-            required
+        <div class="left-row">
+          <img
+            src="{% static 'images/logo.jpg' %}"
+            alt="logo image"
+            width="50"
+            height="50"
           />
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-            Search
+          <span>LOGO</span>
+        </div>
+      </a>
+      <div class="middle-row">
+        <form action="{% url 'documents:search' %}" method="get">
+          <input type="text" name="q" placeholder="Search" required />
+          <button type="submit">
+            <img src="{% static 'images/search.png' %}" alt="Search" />
           </button>
         </form>
       </div>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-          {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'documents:logout' %}">Logout</a>
-          </li>
-          {% endif %}
+      <div class="right-row">
+        <ul>
+          <a
+            href="{% if user.is_superuser %}{% url 'custom_admin_dashboard:admin_dashboard' %}{% else %}{% url 'documents:home' %}{% endif %}"
+          >
+            <li>
+              <span
+                ><img src="{% static 'images/home.png' %}" alt="Home" /></span
+              >Home
+            </li>
+          </a>
+          <a href="#">
+            <li>
+              <span
+                ><img
+                  src="{% static 'images/notification.png' %}"
+                  alt="Notifications" /></span
+              >Notifications
+            </li>
+          </a>
         </ul>
+        <a href="#">
+          <div class="profile">
+            <img
+              src="{% static 'images/profile.jpg' %}"
+              alt="profile picture"
+              width="50"
+              height="50"
+            />
+            <span>{{ user.username }}</span>
+          </div>
+        </a>
+        <a href="{% url 'documents:logout' %}">
+          <div class="last">
+            <span>Logout</span>
+            <img src="{% static 'images/logout.png' %}" alt="Logout" />
+          </div>
+        </a>
       </div>
-    </nav>
+    </header>
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-3">
-          <div class="list-group">
-            <h5>Admin Navigation</h5>
-            <a
-              href="{% url 'custom_admin_dashboard:manage_users' %}"
-              class="list-group-item list-group-item-action"
-              >Manage Users</a
-            >
-            <a
-              href="{% url 'custom_admin_dashboard:admin_departments' %}"
-              class="list-group-item list-group-item-action"
-              >Manage Departments</a
-            >
-            <a
-              href="{% url 'custom_admin_dashboard:admin_documents' %}"
-              class="list-group-item list-group-item-action"
-              >Manage Documents</a
-            >
-            <a
-              href="{% url 'custom_admin_dashboard:admin_folders' %}"
-              class="list-group-item list-group-item-action"
-              >Manage Folders</a
-            >
-            <!-- New link -->
+    <main>
+      <section>
+        <div class="sidebar">
+          <!-- <div class="closebtn">
+                  <span>x</span>
+                </div> -->
+          <div class="title">
+            <h1>Departments</h1>
+          </div>
+
+          <div class="sidebar-list">
+            <nav>
+              <ul>
+                <a href="{% url 'custom_admin_dashboard:manage_users' %}"
+                  ><div class="sidebar-items"><li>Manage Users</li></div></a
+                >
+                <a href="{% url 'custom_admin_dashboard:admin_departments' %}"
+                  ><div class="sidebar-items">
+                    <li>Manage Departments</li>
+                  </div></a
+                >
+                <a href="{% url 'custom_admin_dashboard:admin_documents' %}"
+                  ><div class="sidebar-items"><li>Manage Documents</li></div></a
+                >
+                <a href="{% url 'custom_admin_dashboard:admin_folders' %}"
+                  ><div class="sidebar-items"><li>Manage Folders</li></div></a
+                >
+              </ul>
+            </nav>
           </div>
         </div>
-        <div class="col-md-9">
-          <div class="content-area">
-            {% if messages %} {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %} {% endif %} {% block content %}{% endblock %}
-          </div>
+      </section>
+      <section>
+        <div class="container">
+          {% if messages %} {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %} {% endif %}
+          <!-- prettier-ignore-start -->
+          {% block content %} {% endblock %}
+          <!-- prettier-ignore-end -->
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
-    {% comment %} Uncomment the following lines to include JavaScript files
-    <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    {% endcomment %}
+    <footer>
+      <div class="endnote">
+        <p>COPYRIGHT | SAMUEL 2024 | +254 712 345 678, +245 787 654 321</p>
+      </div>
+    </footer>
   </body>
 </html>

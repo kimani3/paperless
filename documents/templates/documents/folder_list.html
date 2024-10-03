@@ -6,8 +6,9 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/svg.css' %}" />
 <link rel="stylesheet" href="{% static 'css/folders.css' %}" />
-{% endblock %}{% block title %}Folders{% endblock %} {% block content %} {% if
-folders %}
+{% endblock %}{% block title %}Folders{% endblock %} {% block content %}
+<!-- prettier-ignore -->
+{% if folders %}
 <h3>Folders</h3>
 <ul>
   {% for folder in folders %}

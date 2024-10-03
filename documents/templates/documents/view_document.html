@@ -1,7 +1,8 @@
 <!-- templates/documents/view_document.html -->
 <!-- prettier-ignore -->
-{% extends 'base.html' %} {% block title %}View Document{% endblock %} {% block
-content %}
+{% extends 'base.html' %} {% block title %}View Document{% endblock %}
+<!-- prettier-ignore -->
+{% block content %}
 <h2>Document: {{ document.file_name }}</h2>
 <embed
   src="{% url 'documents:view_document' document.id %}"

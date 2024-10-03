@@ -1,7 +1,8 @@
 <!-- templates/documents/create_folder.html -->
 <!-- prettier-ignore -->
-{% extends 'base.html' %} {% block title %}Create Folder{% endblock %} {% block
-content %}
+{% extends 'base.html' %} {% block title %}Create Folder{% endblock %}
+<!-- prettier-ignore-start -->
+{% block content %}
 <h2>Create Folder</h2>
 <form method="post">
   {% csrf_token %} {{ form.as_p }}

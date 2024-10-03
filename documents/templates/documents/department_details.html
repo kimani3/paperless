@@ -1,12 +1,10 @@
 <!-- templates/documents/document_details.html -->
-<!-- prettier-ignore -->
-{% extends 'base.html' %}
-{% load static %}
-{% block extra_css %}
+{% extends 'base.html' %} {% load static %} {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/svg.css' %}" />
 <link rel="stylesheet" href="{% static 'css/folders.css' %}" />
-{% endblock %} {% block title %} {{ department.name }} {% endblock %} {% block
-content %}
+{% endblock %} {% block title %} {{ department.name }} {% endblock %}
+<!-- prettier-ignore-start -->
+{% block content %}
 <h3>Folders</h3>
 <ul>
   {% for folder in folders %}
@@ -30,16 +28,15 @@ content %}
   {% endfor %}
 </ul>
 
-{% if selected_folder %}
-<h3>Documents in "{{ selected_folder.name }}"</h3>
 <ul>
   {% for document in selected_folder.documents %}
+  <h3>Documents in "{{ selected_folder.name }}"</h3>
   <div class="file-container">
     <a href="{% url 'documents:view_document_content' document.id %}">
       <div class="file-items">
         <img
           src="{% static 'images/doc.png' %}"
-          alt="empty_folder"
+          alt="document"
           width="120rem"
           height="135rem"
         />
@@ -53,6 +50,5 @@ content %}
   </div>
   {% endfor %}
 </ul>
-{% else %}
-<p>Select a folder to view the documents.</p>
-{% endif %} {% endblock %}
+
+{% endblock %}

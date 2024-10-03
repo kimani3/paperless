@@ -1,16 +1,15 @@
 <!-- templates/documents/folder_detail.html -->
-<!-- prettier-ignore -->
 {% extends 'base.html' %} {% block title %}Folder Details{% endblock %} {% block
 content %}
 <h2>Folder: {{ folder.name }}</h2>
+<ul>
   {% for document in documents %}
   <div class="file-container">
-    <a href="{% url 'documents:view_document' document.id %}"
-    >{{ document.file_name }}</a >
+    <a href="{% url 'documents:view_document' document.id %}">
       <div class="file-items">
         <img
           src="{% static 'images/doc.png' %}"
-          alt="empty_folder"
+          alt="document"
           width="120rem"
           height="135rem"
         />
@@ -22,7 +21,6 @@ content %}
       </div>
     </a>
   </div>
-
   {% endfor %}
 </ul>
 {% endblock %}

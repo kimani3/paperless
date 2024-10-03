@@ -1,13 +1,18 @@
 <!-- templates/documents/document_list.html -->
 <!-- prettier-ignore -->
 
-{% extends 'base.html' %}
-{% load static %}
+<!-- templates/documents/document_list.html -->
+{% extends 'base.html' %} {% load static %}
+<!-- prettier-ignore -->
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/svg.css' %}" />
 <link rel="stylesheet" href="{% static 'css/files.css' %}" />
-{% endblock %} {% block title %}Documents{% endblock %} {% block content %} {%
-if documents %}
+{% endblock %}
+<!-- prettier-ignore -->
+{% block title %}Documents{% endblock %}
+<!-- prettier-ignore -->
+{% block content %}
+{% if documents %}
 <h2>Documents</h2>
 
 <!-- Button to upload a document -->
@@ -27,7 +32,7 @@ if documents %}
       <div class="file-items">
         <img
           src="{% static 'images/doc.png' %}"
-          alt="empty_folder"
+          alt="document"
           width="120rem"
           height="135rem"
         />
@@ -41,13 +46,15 @@ if documents %}
   </div>
   {% endfor %}
 </ul>
-{% endif %} {% else %}
+{% else %}
 <div class="svg-container">
   <div class="svg-items">
     <img src="{% static 'images/No data-cuate.svg' %}" alt="Nothing found" />
     <div class="svg-details">
-      <p>Ooops no documents available at the moment</p>
+      <p>Ooops, no documents available at the moment</p>
     </div>
   </div>
 </div>
-{% endif %} {% endblock %} {% endblock %}
+{% endif %}
+<!-- prettier-ignore -->
+{% endblock %}
