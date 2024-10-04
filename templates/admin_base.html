@@ -25,7 +25,7 @@
         </div>
       </a>
       <div class="middle-row">
-        <form action="{% url 'documents:search' %}" method="get">
+        <form action="{% url 'custom_admin_dashboard:search' %}" method="get">
           <input type="text" name="q" placeholder="Search" required />
           <button type="submit">
             <img src="{% static 'images/search.png' %}" alt="Search" />
@@ -76,35 +76,32 @@
     <main>
       <section>
         <div class="sidebar">
-          <!-- <div class="closebtn">
-                  <span>x</span>
-                </div> -->
           <div class="title">
-            <h1>Departments</h1>
+            <h1>Navigations</h1>
           </div>
-
           <div class="sidebar-list">
             <nav>
               <ul>
-                <a href="{% url 'custom_admin_dashboard:manage_users' %}"
-                  ><div class="sidebar-items"><li>Manage Users</li></div></a
-                >
-                <a href="{% url 'custom_admin_dashboard:admin_departments' %}"
-                  ><div class="sidebar-items">
+                <a href="{% url 'custom_admin_dashboard:manage_users' %}">
+                  <div class="sidebar-items"><li>Manage Users</li></div>
+                </a>
+                <a href="{% url 'custom_admin_dashboard:admin_departments' %}">
+                  <div class="sidebar-items">
                     <li>Manage Departments</li>
-                  </div></a
-                >
-                <a href="{% url 'custom_admin_dashboard:admin_documents' %}"
-                  ><div class="sidebar-items"><li>Manage Documents</li></div></a
-                >
-                <a href="{% url 'custom_admin_dashboard:admin_folders' %}"
-                  ><div class="sidebar-items"><li>Manage Folders</li></div></a
-                >
+                  </div>
+                </a>
+                <a href="{% url 'custom_admin_dashboard:admin_documents' %}">
+                  <div class="sidebar-items"><li>Manage Documents</li></div>
+                </a>
+                <a href="{% url 'custom_admin_dashboard:admin_folders' %}">
+                  <div class="sidebar-items"><li>Manage Folders</li></div>
+                </a>
               </ul>
             </nav>
           </div>
         </div>
       </section>
+
       <section>
         <div class="container">
           {% if messages %} {% for message in messages %}

@@ -8,10 +8,10 @@
 <link rel="stylesheet" href="{% static 'css/folders.css' %}" />
 {% endblock %} {% block content %}
 
-<h2>Search Results for "{{ query }}"</h2>
+<h2>Search Results for "{{ query }}" in:</h2>
 
 {% if departments or folders or documents %} {% if departments %}
-<h3>Departments</h3>
+<h3>Departments:</h3>
 <ul>
   {% for department in departments %}
   <li>
@@ -22,7 +22,7 @@
   {% endfor %}
 </ul>
 {% endif %} {% if folders %}
-<h3>Folders</h3>
+<h3>Folders:</h3>
 <div class="folder-container">
   {% for folder in folders %}
   <a href="{% url 'documents:folder_detail' folder.id %}">

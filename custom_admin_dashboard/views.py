@@ -24,22 +24,43 @@ def admin_departments(request):
     departments = Department.objects.all()
     return render(request, 'custom_admin_dashboard/admin_departments.html', {'departments': departments})
 
+def highlight_query(text, query):
+    if query:
+        highlighted_text = text.replace(query, f'<span class="highlight">{query}</span>')
+        return highlighted_text
+    return text
+
 @login_required
 @admin_required(login_url='/login/')
 def search(request):
     query = request.GET.get('q')
-    departments = Department.objects.filter(name__icontains=query) if query else Department.objects.none()
-    folders = Folder.objects.filter(Q(name__icontains=query) | Q(department__name__icontains=query)) if query else Folder.objects.none()
-    documents = Document.objects.filter(Q(file_name__icontains=query) | Q(folder__name__icontains=query) | Q(folder__department__name__icontains=query)) if query else Document.objects.none()
     
+    # Filter results based on the query
+    departments = Department.objects.filter(name__icontains=query) if query else Department.objects.none()
+    folders = Folder.objects.filter(name__icontains=query) if query else Folder.objects.none()
+    documents = Document.objects.filter(file_name__icontains=query) if query else Document.objects.none()
+    
+    # Count total results
+    total_results = departments.count() + folders.count() + documents.count()
+
+    # Highlight matching text
+    highlighted_departments = [highlight_query(department.name, query) for department in departments]
+    highlighted_folders = [highlight_query(folder.name, query) for folder in folders]
+    highlighted_documents = [highlight_query(document.file_name, query) for document in documents]
+
     context = {
         'query': query,
-        'departments': departments,
-        'folders': folders,
-        'documents': documents,
+        'departments': departments,  # Pass actual department objects
+        'folders': folders,          # Pass actual folder objects
+        'documents': documents,      # Pass actual document objects
+        'highlighted_departments': highlighted_departments,
+        'highlighted_folders': highlighted_folders,
+        'highlighted_documents': highlighted_documents,
+        'total_results': total_results,
     }
     
     return render(request, 'custom_admin_dashboard/search_results.html', context)
+
 
 # departrment management
 @login_required
