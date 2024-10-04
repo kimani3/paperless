@@ -78,23 +78,21 @@
     <main>
       <section>
         <div class="sidebar">
-          <!-- <div class="closebtn">
-              <span>x</span>
-            </div> -->
           <div class="title">
-            <h1>Departments</h1>
+            <h1>Department</h1>
           </div>
-
           <div class="sidebar-list">
             <nav>
               <ul>
-                {% for department in departments %}
-                <a href="{% url 'documents:department_detail' department.id %}">
+                {% if user.is_authenticated and user.department %}
+                <a
+                  href="{% url 'documents:department_detail' user.department.id %}"
+                >
                   <div class="sidebar-items">
-                    <li>{{ department.name }}</li>
+                    <li>{{ user.department.name }}</li>
                   </div>
                 </a>
-                {% endfor %}
+                {% endif %}
               </ul>
             </nav>
           </div>
