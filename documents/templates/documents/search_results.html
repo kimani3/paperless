@@ -4,6 +4,8 @@
 {% load static %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/search.css' %}" />
+<link rel="stylesheet" href="{% static 'css/files.css' %}" />
+<link rel="stylesheet" href="{% static 'css/folders.css' %}" />
 {% endblock %} {% block content %}
 
 <h2>Search Results for "{{ query }}"</h2>
@@ -22,10 +24,10 @@
 {% endif %} {% if folders %}
 <h3>Folders</h3>
 
-{% for folder in folders %}
 <div class="folder-container">
+  {% for folder in folders %}
   <a href="{% url 'documents:folder_detail' folder.id %}"
-    >{{ folder.name }} ({{ folder.department.name }})
+    >Department - ({{ folder.department.name }})
     <div class="folder-items">
       <img
         src="{% static 'images/empty-folder.png' %}"
@@ -34,21 +36,20 @@
         height="135rem"
       />
       <div class="folder-details">
-        <p>{{ folder.name }}</p>
+        <p>epartment -</p>
         <p>{{ folder.created_at }}</p>
         <p>{{ folder.created_by }}</p>
       </div>
     </div>
   </a>
+  {% endfor %}
 </div>
-{% endfor %} {% endif %} {% if documents %}
+{% endif %} {% if documents %}
 <h3>Documents</h3>
-
-{% for document in documents %}
 <div class="file-container">
+  {% for document in documents %}
   <a href="{% url 'documents:view_document_content' document.id %}"
-    >{{ document.file_name }} ({{ document.folder.name }} - {{
-    document.folder.department.name }})
+    >folder - {{ document.folder.name }}
     <div class="file-items">
       <img
         src="{% static 'images/doc.png' %}"
@@ -63,8 +64,9 @@
       </div>
     </div>
   </a>
+  {% endfor %}
 </div>
-{% endfor %} {% endif %} {% else %}
+{% endif %} {% else %}
 <div class="search-container">
   <div class="search-items">
     <img src="{% static 'images/Search-amico.svg' %}" alt="empty_folder" />

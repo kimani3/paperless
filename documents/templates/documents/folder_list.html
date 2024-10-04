@@ -10,27 +10,26 @@
 <!-- prettier-ignore -->
 {% if folders %}
 <h3>Folders</h3>
-<ul>
+
+<div class="folder-container">
   {% for folder in folders %}
-  <div class="folder-container">
-    <a href="{% url 'documents:folder_detail' folder.id %}">
-      <div class="folder-items">
-        <img
-          src="{% static 'images/empty-folder.png' %}"
-          alt="empty_folder"
-          width="120rem"
-          height="135rem"
-        />
-        <div class="folder-details">
-          <p>{{ folder.name }}</p>
-          <p>{{ folder.created_at }}</p>
-          <p>{{ folder.created_by }}</p>
-        </div>
+  <a href="{% url 'documents:folder_detail' folder.id %}">
+    <div class="folder-items">
+      <img
+        src="{% static 'images/empty-folder.png' %}"
+        alt="empty_folder"
+        width="120rem"
+        height="135rem"
+      />
+      <div class="folder-details">
+        <p>{{ folder.name }}</p>
+        <p>{{ folder.created_at }}</p>
+        <p>{{ folder.created_by }}</p>
       </div>
-    </a>
-  </div>
+    </div>
+  </a>
   {% endfor %}
-</ul>
+</div>
 {% endif %} {% else %}
 <div class="svg-container">
   <div class="svg-items">

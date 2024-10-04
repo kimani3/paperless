@@ -3,20 +3,19 @@
 {% extends 'base.html' %}
 {% block title %}Upload Document{% endblock %}
 {% block content %}
-<div class="container">
-  <h2>Upload Document</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %} {{ form.as_p }}
-    <div class="form-group">
-      <label for="id_file_content">File:</label>
-      <input
-        type="file"
-        name="file_content"
-        accept="application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        required
-      />
-    </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-  </form>
-</div>
+<h2>Upload Document</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %} {{ form.as_p }}
+  <div class="form-group">
+    <label for="id_file_content">File:</label>
+    <input
+      type="file"
+      name="file_content"
+      accept="application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      required
+    />
+  </div>
+  <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
 {% endblock %}

@@ -25,27 +25,25 @@
   </a>
 </div>
 
-<ul>
+<div class="file-container">
   {% for document in documents %}
-  <div class="file-container">
-    <a href="{% url 'documents:view_document_content' document.id %}">
-      <div class="file-items">
-        <img
-          src="{% static 'images/doc.png' %}"
-          alt="document"
-          width="120rem"
-          height="135rem"
-        />
-        <div class="file-details">
-          <p>{{ document.file_name }}</p>
-          <p>{{ document.created_by }}</p>
-          <p>{{ document.created_at }}</p>
-        </div>
+  <a href="{% url 'documents:view_document_content' document.id %}">
+    <div class="file-items">
+      <img
+        src="{% static 'images/doc.png' %}"
+        alt="document"
+        width="120rem"
+        height="135rem"
+      />
+      <div class="file-details">
+        <p>{{ document.file_name }}</p>
+        <p>{{ document.created_by }}</p>
+        <p>{{ document.created_at }}</p>
       </div>
-    </a>
-  </div>
+    </div>
+  </a>
   {% endfor %}
-</ul>
+</div>
 {% else %}
 <div class="svg-container">
   <div class="svg-items">
