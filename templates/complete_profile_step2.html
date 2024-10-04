@@ -1,0 +1,18 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<h2>Complete Profile - Step 2</h2>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <div class="form-group">
+    <label for="id_file_content">File:</label>
+    <div class="form-group">
+      <label for="profile_image">Profile Image:</label>
+      {{ form.profile_image }}
+      <!-- Render Profile Image field -->
+    </div>
+    <input type="file" name="file_content" accept="image/*" required />
+  </div>
+  <button type="submit">Complete Profile</button>
+</form>
+{% if messages %} {% for message in messages %}
+<div class="{{ message.tags }}">{{ message }}</div>
+{% endfor %} {% endif %} {% endblock %}

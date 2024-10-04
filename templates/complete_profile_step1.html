@@ -1,0 +1,42 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<h2>Complete Profile - Step 1</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div>
+    {{ form.nationalID.label }}
+    <!-- Label for nationalID -->
+    {{ form.nationalID }}
+    <!-- Render the nationalID field -->
+    {% if form.nationalID.errors %}
+    <div class="error">{{ form.nationalID.errors }}</div>
+    <!-- Error message for nationalID -->
+    {% endif %}
+  </div>
+
+  <div>
+    {{ form.department.label }}
+    <!-- Label for department -->
+    {{ form.department }}
+    <!-- Render the department field -->
+    {% if form.department.errors %}
+    <div class="error">{{ form.department.errors }}</div>
+    <!-- Error message for department -->
+    {% endif %}
+  </div>
+
+  <div>
+    {{ form.profile_image.label }}
+    <!-- Label for profile_image -->
+    {{ form.profile_image }}
+    <!-- Render the profile_image field -->
+    {% if form.profile_image.errors %}
+    <div class="error">{{ form.profile_image.errors }}</div>
+    <!-- Error message for profile_image -->
+    {% endif %}
+  </div>
+
+  <button type="submit">Next</button>
+</form>
+{% if messages %} {% for message in messages %}
+<div class="{{ message.tags }}">{{ message }}</div>
+{% endfor %} {% endif %} {% endblock %}

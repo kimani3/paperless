@@ -1,17 +1,148 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
-from .models import Department, Folder, Document, CustomUser
-from .forms import DocumentForm, FolderForm, DepartmentForm, RegistrationForm, LoginForm
+from .models import Department, Folder, Document, CustomUser, Profile
+from .forms import DocumentForm, FolderForm,RegistrationForm, LoginForm,ProfileStep1Form, ProfileStep2Form,VerificationForm
 from datetime import date
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Q
+from django.core.mail import send_mail
 
 import base64
+import random
 import os
 
+
+def send_verification_code(user):
+    code = random.randint(1000, 9999)
+    user.profile.verification_code = code
+    user.profile.save()
+    send_mail(
+        'Your Verification Code',
+        f'Your verification code is {code}',
+        'from@example.com',
+        [user.email],
+        fail_silently=False,
+    )
+
 def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            # Check if the email is already in use
+            if CustomUser.objects.filter(username=email).exists():
+                messages.error(request, "An account with this email already exists.")
+                return render(request, 'register.html', {'form': form})
+
+            user = form.save(commit=False)
+            user.username = email  # Use the email as the username
+            user.set_password(form.cleaned_data['password1'])
+            user.is_active = False  # User is inactive until email verification
+            user.save()
+            
+            # Create the Profile instance
+            Profile.objects.create(user=user)  # Create a Profile instance
+
+            send_verification_code(user)
+            request.session['user_id'] = user.id  # Store user ID in session
+            messages.success(request, "Registration successful. A verification code has been sent to your email.")
+            return redirect('documents:verify_email')
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
+
+
+def verify_email(request):
+    if request.method == 'POST':
+        form = VerificationForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            user_id = request.session.get('user_id')
+            if user_id:
+                user = CustomUser.objects.get(id=user_id)
+                if user.profile.verification_code == code:
+                    user.is_active = True
+                    user.save()
+                    messages.success(request, "Email verified successfully. You can now log in.")
+                    return redirect('documents:login')
+                else:
+                    messages.error(request, "Invalid verification code.")
+    else:
+        form = VerificationForm()
+    return render(request, 'verify_email.html', {'form': form})
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username_or_email = form.cleaned_data['username']  # This can be an email
+            password = form.cleaned_data['password']
+            
+            try:
+                # Check if the provided username_or_email is an email
+                if '@' in username_or_email:  # Simple check for email format
+                    user = CustomUser.objects.get(email=username_or_email)  # Fetch user by email
+                else:
+                    user = CustomUser.objects.get(username=username_or_email)  # Fetch user by username
+
+                # Authenticate using the user object
+                user = authenticate(request, username=user.username, password=password)
+
+                if user is not None:
+                    if not user.is_active:
+                        messages.error(request, "Your account is not active. Please check your email for verification instructions.")
+                    else:
+                        login(request, user)
+                        if not user.is_profile_complete:
+                            return redirect('documents:complete_profile_step1')  # Redirect to step 1 for profile completion
+                        if user.is_superuser:
+                            return redirect('custom_admin_dashboard:admin_dashboard')
+                        else:
+                            return redirect('documents:home')
+                else:
+                    messages.error(request, "Invalid username or password.")
+            except CustomUser.DoesNotExist:
+                messages.error(request, "Invalid username or password.")  # Handle invalid email case
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
+# Step 1 Profile Completion View
+@login_required
+def complete_profile_step1(request):
+    if request.method == 'POST':
+        form = ProfileStep1Form(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            user = form.save(commit=False)
+            profile_image = request.FILES.get('profile_image')
+            if profile_image:
+                document_data = profile_image.read()
+                user.profile_image = base64.b64encode(document_data)  # Save as binary
+            user.save()
+            messages.success(request, "Profile step 1 completed successfully.")
+            return redirect('documents:complete_profile_step2')  # Proceed to step 2
+    else:
+        form = ProfileStep1Form(instance=request.user)
+    
+    return render(request, 'complete_profile_step1.html', {'form': form})
+
+# Step 2 Profile Completion View
+@login_required
+def complete_profile_step2(request):
+    if request.method == 'POST':
+        form = ProfileStep2Form(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile completed successfully.")
+            return redirect('documents:home')  # Redirect after profile completion
+    else:
+        form = ProfileStep2Form(instance=request.user)
+    
+    return render(request, 'complete_profile_step2.html', {'form': form})
+
+""" def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -42,7 +173,7 @@ def user_login(request):
                 messages.error(request, "Invalid username or password.")
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': form}) """
 
 @login_required
 def home(request):
