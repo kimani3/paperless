@@ -158,20 +158,22 @@ def upload_document(request, department_id=None, folder_id=None):
 
     return render(request, 'documents/upload_document.html', {'form': form})
 
-
 @login_required
 def create_folder(request):
     if request.method == 'POST':
         form = FolderForm(request.POST)
         if form.is_valid():
-            folder = form.save(commit=False)
-            folder.name = date.today().strftime('%Y-%m-%d')
-            folder.created_by = request.user
-            folder.save()
-            return redirect('documents:folder_list')
+            folder = form.save(commit=False)  # Create a folder instance but don't save to the database yet
+            folder.created_by = request.user  # Set the user who created the folder
+            folder.department = request.user.department  # Set the department to the user's department
+            folder.save()  # Now save the folder to the database
+            # Redirect to the department detail page
+            return redirect('documents:department_detail', department_id=folder.department.id)  # Pass the department_id
     else:
-        form = FolderForm()
+        form = FolderForm()  # Create an empty form instance for GET requests
     return render(request, 'documents/create_folder.html', {'form': form})
+
+
 
 
 

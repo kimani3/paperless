@@ -37,7 +37,7 @@ class DocumentForm(forms.ModelForm):
 class FolderForm(forms.ModelForm):
     class Meta:
         model = Folder
-        fields = ['department']
+        fields = ['name']  # Include only the fields you want the user to fill
 
 class DepartmentForm(forms.ModelForm):
     class Meta:

@@ -13,6 +13,12 @@
 {% if folders %}
 
 <h3>Folders</h3>
+<!-- Button to create a folder -->
+<div style="text-align: right">
+  <a href="{% url 'documents:create_folder' %}" class="btn btn-primary">
+    Create Folder
+  </a>
+</div>
 
 <div class="folder-container">
   {% for folder in folders %}
