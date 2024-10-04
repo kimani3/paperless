@@ -8,14 +8,14 @@
 <iframe
   src="data:{{ content_type }};base64,{{ file_content }}"
   width="100%"
-  height="600px"
+  height="100%"
   frameborder="0"
 ></iframe>
 {% elif is_image %}
 <img
   src="data:{{ content_type }};base64,{{ file_content }}"
   alt="{{ document.file_name }}"
-  style="max-width: 100%; height: auto"
+  style="width: 100%; height: 100%; object-fit: contain"
 />
 {% elif is_docx %}
 <p>

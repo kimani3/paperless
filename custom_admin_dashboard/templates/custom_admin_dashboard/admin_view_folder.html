@@ -1,22 +1,48 @@
 <!-- templates/custom_admin_dashboard/admin_view_folder.html -->
 <!-- prettier-ignore -->
 {% extends 'admin_base.html' %} 
-{% block title %}Folders{% endblock %} 
-{% block content %}
-<h2>Folders in {{ department.name }}</h2>
-<!-- Display the department name -->
-<ul>
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/svg.css' %}" />
+<link rel="stylesheet" href="{% static 'css/folders.css' %}" />
+{% endblock %}{% block title %}Folders{% endblock %} {% block content %}
+<!-- prettier-ignore -->
+{% if folders %}
+<h2>Folders in {{department.name }}</h2>
+<div class="folder-container">
   {% for folder in folders %}
-  <li>
-    <a href="{% url 'custom_admin_dashboard:admin_open_folder' folder.id %}"
-      >{{ folder.name }}</a
-    >
-    (Department: {{ folder.department.name }}, Created by {{ folder.created_by
-    }} on {{ folder.created_at }})
-  </li>
-  {% empty %}
-  <li>No folders found in this department.</li>
-  <!-- Message if no folders exist -->
+  <a href="{% url 'custom_admin_dashboard:admin_open_folder' folder.id %}">
+    <div class="folder-items">
+      {% if folder.is_empty %}
+      <img
+        src="{% static 'images/empty-folder.png' %}"
+        alt="empty_folder"
+        width="120rem"
+        height="135rem"
+      />
+      {% else %}
+      <img
+        src="{% static 'images/folder.png' %}"
+        alt="folder_with_documents"
+        width="120rem"
+        height="135rem"
+      />
+      {% endif %}
+      <div class="folder-details">
+        <p>Name: {{ folder.name }}</p>
+        <p>Date: {{ folder.created_at }}</p>
+      </div>
+    </div>
+  </a>
   {% endfor %}
-</ul>
-{% endblock %}
+</div>
+{% else %}
+<div class="svg-container">
+  <div class="svg-items">
+    <img src="{% static 'images/No data-cuate.svg' %}" alt="Nothing found" />
+    <div class="svg-details">
+      <p>Ooops no Folders available at the moment</p>
+    </div>
+  </div>
+</div>
+{% endif %} {% endblock %}

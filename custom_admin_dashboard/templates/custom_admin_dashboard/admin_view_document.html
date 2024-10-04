@@ -1,39 +1,88 @@
 <!-- templates/custom_admin_dashboard/admin_view_document.html -->
 <!-- prettier-ignore -->
 {% extends 'admin_base.html' %}
+{% load static %}
 {% block title %}Documents{% endblock %}
 {% block content %}
 <h2>Documents in {{ folder.name }}</h2>
 <!-- Display the folder name -->
+<!-- prettier-ignore -->
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/svg.css' %}" />
+<link rel="stylesheet" href="{% static 'css/files.css' %}" />
+{% endblock %}
+<!-- prettier-ignore -->
+{% if documents %}
 
 <!-- Button to upload a document -->
 <div style="text-align: right">
-  {% if folder.department %}
   <a
     href="{% url 'custom_admin_dashboard:admin_add_document' department_id=folder.department.id folder_id=folder.id %}"
     class="btn btn-primary"
   >
     Upload Document
   </a>
-  {% else %}
-  <button class="btn btn-secondary" disabled>
-    Upload Document (No Department Assigned)
-  </button>
-  {% endif %}
 </div>
 
-<ul>
+<div class="file-container">
   {% for document in documents %}
-  <li>
-    <a
-      href="{% url 'custom_admin_dashboard:admin_view_document_content' document.id %}"
-    >
-      {{ document.file_name }}
-    </a>
-    (Created by {{ document.created_by }} on {{ document.created_at }})
-  </li>
-  {% empty %}
-  <li>No documents found in this folder.</li>
+  <a
+    href="{% url 'custom_admin_dashboard:admin_view_document_content' document.id %}"
+  >
+    <div class="file-items">
+      {% if document.file_extension == '.pdf' %}
+      <img
+        src="{% static 'images/pdf.png' %}"
+        alt="PDF document"
+        width="120rem"
+        height="135rem"
+      />
+      {% elif document.file_extension in '.jpg,.jpeg,.png' %}
+      <img
+        src="{% static 'images/img.png' %}"
+        alt="Image document"
+        width="120rem"
+        height="135rem"
+      />
+      {% elif document.file_extension in '.doc,.docx' %}
+      <img
+        src="{% static 'images/word.png' %}"
+        alt="Word document"
+        width="120rem"
+        height="135rem"
+      />
+      {% elif document.file_extension in '.ppt,.pptx' %}
+      <img
+        src="{% static 'images/powerpoint.png' %}"
+        alt="PowerPoint document"
+        width="120rem"
+        height="135rem"
+      />
+      {% else %}
+      <img
+        src="{% static 'images/doc.png' %}"
+        alt="document"
+        width="120rem"
+        height="135rem"
+      />
+      {% endif %}
+      <div class="file-details">
+        <p>Name: {{ document.file_name }}</p>
+        <p>Date: {{ document.created_at }}</p>
+      </div>
+    </div>
+  </a>
   {% endfor %}
-</ul>
+</div>
+{% else %}
+<div class="svg-container">
+  <div class="svg-items">
+    <img src="{% static 'images/No data-cuate.svg' %}" alt="Nothing found" />
+    <div class="svg-details">
+      <p>Ooops, no documents available at the moment</p>
+    </div>
+  </div>
+</div>
+{% endif %}
+<!-- prettier-ignore -->
 {% endblock %}
