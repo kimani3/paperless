@@ -12,9 +12,6 @@
 {% block title %}Documents{% endblock %}
 <!-- prettier-ignore -->
 {% block content %}
-{% if documents %}
-<h2>Documents</h2>
-
 <!-- Button to upload a document -->
 <div style="text-align: right">
   <a
@@ -24,6 +21,8 @@
     Upload Document
   </a>
 </div>
+{% if documents %}
+<h2>Documents</h2>
 
 <div class="file-container">
   {% for document in documents %}

@@ -57,9 +57,6 @@ def home(request):
     
     return render(request, 'documents/documents_dashboard.html', context)
 
-@login_required
-def doc_dashboard(request):
-    return render(request, 'documents/admin_dashboard.html')
 
 def search(request):
     query = request.GET.get('q')
@@ -113,13 +110,6 @@ def view_document_content(request, document_id):
         'is_docx': is_docx,
     })
 
-
-@login_required
-def view_document(request, document_id):
-    document = get_object_or_404(Document, id=document_id)
-    response = HttpResponse(document.file_content, content_type='application/octet-stream')
-    response['Content-Disposition'] = f'inline; filename="{document.file_name}"'
-    return response
 
 
 @login_required
@@ -183,15 +173,7 @@ def create_folder(request):
         form = FolderForm()
     return render(request, 'documents/create_folder.html', {'form': form})
 
-@login_required
-def document_list(request):
-    documents = Document.objects.all()
-    return render(request, 'documents/document_list.html', {'documents': documents})
 
-@login_required
-def folder_list(request):
-    folders = Folder.objects.prefetch_related('documents').all()
-    return render(request, 'documents/folder_list.html', {'folders': folders})
 
 @login_required
 def folder_detail(request, folder_id):
@@ -206,11 +188,6 @@ def folder_detail(request, folder_id):
         'folder': folder,  # Pass folder for ID
     })
 
-
-@login_required
-def department_list(request):
-    departments = Department.objects.all()
-    return render(request, 'documents/department_list.html', {'departments': departments})
 
 @login_required
 def department_detail(request, department_id):
