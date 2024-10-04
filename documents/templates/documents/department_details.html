@@ -8,9 +8,12 @@
 {% block title %} {{ department.name }} {% endblock %}
 <!-- prettier-ignore-start -->
 {% block content %}
+
 <!-- Check if folders exist -->
 {% if folders %}
+
 <h3>Folders</h3>
+
 <div class="folder-container">
   {% for folder in folders %}
   <a href="{% url 'documents:folder_detail' folder.id %}">
@@ -40,6 +43,12 @@
 </div>
 {% else %}
 <!-- Content when no folders are available -->
+<!-- Button to create a folder -->
+<div style="text-align: right">
+  <a href="{% url 'documents:create_folder' %}" class="btn btn-primary">
+    Upload Document
+  </a>
+</div>
 <div class="svg-container">
   <div class="svg-items">
     <img src="{% static 'images/No data-cuate.svg' %}" alt="Nothing found" />
