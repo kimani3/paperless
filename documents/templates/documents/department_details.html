@@ -28,8 +28,7 @@
       {% endif %}
       <div class="folder-details">
         <p>{{ folder.name }}</p>
-        <p>{{ folder.created_at }}</p>
-        <p>{{ folder.created_by }}</p>
+        <p>Date: {{ folder.created_at }}</p>
       </div>
     </div>
   </a>
@@ -50,8 +49,7 @@
       />
       <div class="file-details">
         <p>{{ document.file_name }}</p>
-        <p>{{ document.created_by }}</p>
-        <p>{{ document.created_at }}</p>
+        <p>Date:{{ document.created_at }}</p>
       </div>
     </div>
   </a>

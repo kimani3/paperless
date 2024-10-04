@@ -63,9 +63,11 @@ def doc_dashboard(request):
 
 def search(request):
     query = request.GET.get('q')
+
+    # Check for exact matches first
     departments = Department.objects.filter(name__icontains=query) if query else Department.objects.none()
-    folders = Folder.objects.filter(Q(name__icontains=query) | Q(department__name__icontains=query)) if query else Folder.objects.none()
-    documents = Document.objects.filter(Q(file_name__icontains=query) | Q(folder__name__icontains=query) | Q(folder__department__name__icontains=query)) if query else Document.objects.none()
+    folders = Folder.objects.filter(name__icontains=query) if query else Folder.objects.none()
+    documents = Document.objects.filter(file_name__icontains=query) if query else Document.objects.none()
 
     context = {
         'query': query,
@@ -75,7 +77,6 @@ def search(request):
     }
 
     return render(request, 'documents/search_results.html', context)
-
 
 @login_required
 def view_document_content(request, document_id):
