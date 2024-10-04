@@ -189,7 +189,7 @@ def document_list(request):
 
 @login_required
 def folder_list(request):
-    folders = Folder.objects.all()
+    folders = Folder.objects.prefetch_related('documents').all()
     return render(request, 'documents/folder_list.html', {'folders': folders})
 
 @login_required

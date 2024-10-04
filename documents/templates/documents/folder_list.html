@@ -15,12 +15,21 @@
   {% for folder in folders %}
   <a href="{% url 'documents:folder_detail' folder.id %}">
     <div class="folder-items">
+      {% if folder.is_empty %}
       <img
         src="{% static 'images/empty-folder.png' %}"
         alt="empty_folder"
         width="120rem"
         height="135rem"
       />
+      {% else %}
+      <img
+        src="{% static 'images/folder.png' %}"
+        alt="folder_with_documents"
+        width="120rem"
+        height="135rem"
+      />
+      {% endif %}
       <div class="folder-details">
         <p>{{ folder.name }}</p>
         <p>{{ folder.created_at }}</p>

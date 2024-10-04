@@ -60,6 +60,10 @@ class Folder(models.Model):
     def __str__(self):
         return f"{self.name} ({self.department.name})"
 
+    @property
+    def is_empty(self):
+        return not self.documents.exists()
+
 class Document(models.Model):
     file_name = models.CharField(max_length=255)
     file_content = models.BinaryField()
