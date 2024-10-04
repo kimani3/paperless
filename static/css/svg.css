@@ -7,6 +7,12 @@
   justify-content: center;
 }
 
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+  color: black; /* Optional: to ensure the text color is readable */
+}
+
 .svg-items {
   display: flex;
   flex-direction: column;

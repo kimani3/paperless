@@ -12,8 +12,6 @@
 <link rel="stylesheet" href="{% static 'css/files.css' %}" />
 {% endblock %}
 <!-- prettier-ignore -->
-{% if documents %}
-
 <!-- Button to upload a document -->
 <div style="text-align: right">
   <a
@@ -23,6 +21,7 @@
     Upload Document
   </a>
 </div>
+{% if documents %}
 
 <div class="file-container">
   {% for document in documents %}

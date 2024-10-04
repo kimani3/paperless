@@ -232,6 +232,12 @@ header ul li:hover {
   background: transparent;
 }
 
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+  color: black; /* Optional: to ensure the text color is readable */
+}
+
 /* footer section */
 
 .endnote {

@@ -12,6 +12,12 @@
   background-color: hsla(0, 0%, 77%, 0.5);
 }
 
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+  color: black; /* Optional: to ensure the text color is readable */
+}
+
 .folder-items {
   padding: 0.5rem;
   border-radius: 0.3rem;

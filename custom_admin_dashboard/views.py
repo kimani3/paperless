@@ -43,19 +43,12 @@ def search(request):
     # Count total results
     total_results = departments.count() + folders.count() + documents.count()
 
-    # Highlight matching text
-    highlighted_departments = [highlight_query(department.name, query) for department in departments]
-    highlighted_folders = [highlight_query(folder.name, query) for folder in folders]
-    highlighted_documents = [highlight_query(document.file_name, query) for document in documents]
 
     context = {
         'query': query,
         'departments': departments,  # Pass actual department objects
         'folders': folders,          # Pass actual folder objects
         'documents': documents,      # Pass actual document objects
-        'highlighted_departments': highlighted_departments,
-        'highlighted_folders': highlighted_folders,
-        'highlighted_documents': highlighted_documents,
         'total_results': total_results,
     }
     
@@ -121,6 +114,8 @@ def admin_delete_department(request, department_id):
         return redirect('custom_admin_dashboard:admin_departments')
     return render(request, 'custom_admin_dashboard/admin_delete_department.html', {'department': department})
 
+
+# folder management
 
 @login_required
 @admin_required(login_url='/login/')
@@ -301,6 +296,8 @@ def admin_view_document_content(request, document_id):
     })
 
 
+# manage users
+
 @login_required
 @admin_required(login_url='/login/')
 def manage_users(request):
@@ -346,46 +343,4 @@ def admin_delete_user(request, user_id):
         return redirect('custom_admin_dashboard:manage_users')
     return render(request, 'custom_admin_dashboard/admin_delete_user.html', {'user': user})
 
-# folder management
-@login_required
-@admin_required(login_url='/login/')
-def admin_folders(request):
-    folders = Folder.objects.all()
-    return render(request, 'custom_admin_dashboard/admin_folders.html', {'folders': folders})
 
-@login_required
-@admin_required(login_url='/login/')
-def admin_add_folder(request):
-    if request.method == 'POST':
-        form = FolderForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Folder added successfully.')
-            return redirect('custom_admin_dashboard:admin_folders')
-    else:
-        form = FolderForm()
-    return render(request, 'custom_admin_dashboard/admin_add_folder.html', {'form': form})
-
-@login_required
-@admin_required(login_url='/login/')
-def admin_edit_folder(request, folder_id):
-    folder = get_object_or_404(Folder, id=folder_id)
-    if request.method == 'POST':
-        form = FolderForm(request.POST, instance=folder)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Folder updated successfully.')
-            return redirect('custom_admin_dashboard:admin_folders')
-    else:
-        form = FolderForm(instance=folder)
-    return render(request, 'custom_admin_dashboard/admin_edit_folder.html', {'form': form, 'folder': folder})
-
-@login_required
-@admin_required(login_url='/login/')
-def admin_delete_folder(request, folder_id):
-    folder = get_object_or_404(Folder, id=folder_id)
-    if request.method == 'POST':
-        folder.delete()
-        messages.success(request, 'Folder deleted successfully.')
-        return redirect('custom_admin_dashboard:admin_folders')
-    return render(request, 'custom_admin_dashboard/admin_delete_folder.html', {'folder': folder})
