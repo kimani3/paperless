@@ -1,12 +1,13 @@
 <!-- admin_pending_users.html -->
 {% extends 'admin_base.html' %} {% block content %}
 <h2>Manage Pending Users</h2>
-<table>
+<!-- Table Structure -->
+<table class="table">
   <thead>
     <tr>
       <th>Username</th>
       <th>Email</th>
-      <th>Action</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -15,7 +16,7 @@
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
       <td>
-        <form method="post">
+        <form method="post" style="display: inline">
           {% csrf_token %}
           <input type="hidden" name="user_id" value="{{ user.id }}" />
           <select name="department_id" required>
@@ -24,8 +25,22 @@
             <option value="{{ department.id }}">{{ department.name }}</option>
             {% endfor %}
           </select>
-          <button type="submit" name="action" value="activate">Activate</button>
-          <button type="submit" name="action" value="deny">Deny</button>
+          <button
+            type="submit"
+            name="action"
+            value="activate"
+            class="btn-action btn-success"
+          >
+            Activate
+          </button>
+          <button
+            type="submit"
+            name="action"
+            value="deny"
+            class="btn-action btn-danger"
+          >
+            Deny
+          </button>
         </form>
       </td>
     </tr>

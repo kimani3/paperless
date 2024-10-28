@@ -106,6 +106,12 @@
                   <div class="sidebar-items"><li>Manage Users</li></div>
                 </a>
                 <a
+                  href="{% url 'custom_admin_dashboard:admin_pending_users' %}"
+                  class="{% if request.resolver_match.url_name == 'admin_pending_users' %}active{% endif %}"
+                >
+                  <div class="sidebar-items"><li>Pending Users</li></div>
+                </a>
+                <a
                   href="{% url 'custom_admin_dashboard:admin_departments' %}"
                   class="{% if request.resolver_match.url_name == 'admin_departments' %}active{% endif %}"
                 >

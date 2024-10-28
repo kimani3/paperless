@@ -62,7 +62,7 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-def send_verification_code(user, first_name):
+def send_verification_code(user):
     code = random.randint(1000, 9999)
     verification_code = VerificationCode(
         user=user,
@@ -73,7 +73,7 @@ def send_verification_code(user, first_name):
 
     send_mail(
         'Your Verification Code',
-        f"Dear {first_name},\n\nYour username is {user.username}.\nYour verification code is {code}. Please note that this code will expire in 1 minute.",
+        f"Your username is {user.username}.\nYour verification code is {code}. Please note that this code will expire in 1 minute.",
         'from@example.com',
         [user.email],
         fail_silently=False,
@@ -83,11 +83,12 @@ def resend_verification_code(request):
     user_id = request.session.get('user_id')
     if user_id:
         user = get_object_or_404(User, id=user_id)  # Use default User model
-        send_verification_code(user)
+        send_verification_code(user)  # Call without first_name
         messages.success(request, "Verification code has been resent to your email.")
     else:
         messages.error(request, "Could not resend verification code. Please try again.")
     return redirect('documents:verify_email')
+
 
 def verify_email(request):
     if request.method == 'POST':

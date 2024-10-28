@@ -405,14 +405,15 @@ def admin_pending_users(request):
 
         if action == 'activate':
             # Assign department if provided
+            profile = get_object_or_404(Profile, user=user)  # Fetch the user's profile
+            
             if department_id:
-                department = Department.objects.get(id=department_id)
-                profile = Profile.objects.get(user=user)
-                profile.department = department
+                department = get_object_or_404(Department, id=department_id)
+                profile.department = department  # Assign the department to the profile
             
             user.is_active = True
-            user.save()
-            profile.save()  # Save the profile if department is assigned
+            user.save()  # Activate the user
+            profile.save()  # Save the profile
 
             # Generate the login URL
             login_url = request.build_absolute_uri(reverse('documents:login'))  # Update to match your login URL name
@@ -441,12 +442,13 @@ def admin_pending_users(request):
             user.delete()  # Alternatively, you could set a flag instead of deleting
             messages.warning(request, f"{user.username}'s registration has been denied.")
         
-        return redirect('custom_admin_dashboard:pending_users')
+        return redirect('custom_admin_dashboard:admin_pending_users')
 
     return render(request, 'custom_admin_dashboard/admin_pending_users.html', {
         'pending_users': pending_users,
         'departments': departments,  # Pass departments to the template
     })
+
 
 
 @login_required
