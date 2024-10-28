@@ -1,0 +1,57 @@
+/* General Form Styling */
+.form-group {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+/* Label Styling */
+.col-form-label {
+  font-weight: 600;
+  margin-bottom: 0;
+  /* Add more styling if needed */
+}
+
+/* Input Field Styles */
+.form-control {
+  padding: 0.375rem 0.75rem; /* Adjust padding for better appearance */
+  font-size: 1rem; /* Base font size */
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da; /* Border color */
+  border-radius: 0.25rem; /* Rounded corners */
+}
+
+/* Readonly Input Field */
+.form-control-plaintext {
+  font-size: 1rem; /* Same font size as other input fields */
+  line-height: 1.5;
+  color: #6c757d; /* Text color for readonly fields */
+  background-color: transparent; /* No background for readonly */
+  border: none; /* No border for readonly fields */
+}
+
+/* Adjusting Grid for Labels and Inputs */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-sm-2 {
+  flex: 0 0 16.66667%; /* 2/12 columns */
+  max-width: 16.66667%;
+}
+
+.col-sm-10 {
+  flex: 0 0 83.33333%; /* 10/12 columns */
+  max-width: 83.33333%;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+  .col-form-label {
+    text-align: left; /* Align labels to the left on small screens */
+  }
+}

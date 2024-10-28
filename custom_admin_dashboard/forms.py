@@ -1,24 +1,50 @@
 # custom_admin_dashboard/forms.py
 from django import forms
+from documents.models import Department, Folder, Document, Profile
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from documents.models import Department, Folder, Document, CustomUser
+from django.core.exceptions import ValidationError
 
-class RegistrationForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-    password_confirm = forms.CharField(widget=forms.PasswordInput)
+CustomUser = get_user_model()
+
+class EditUserForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    username = forms.CharField(required=True)  # Include username
+    department = forms.ModelChoiceField(queryset=Department.objects.all(), required=True)
+    is_active = forms.BooleanField(required=False)
+    is_superuser = forms.BooleanField(required=False)
 
     class Meta:
-        model = CustomUser  # Change this to CustomUser
-        fields = ['username', 'email', 'department', 'is_superuser','is_active']  # Include the department field
+        model = CustomUser
+        fields = ['username', 'email', 'department', 'is_active', 'is_superuser']
 
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        password_confirm = cleaned_data.get("password_confirm")
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if CustomUser.objects.filter(email=email).exclude(id=self.instance.id).exists():
+            raise ValidationError("This email is already in use.")
+        return email
+    
+class RegistrationForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    department = forms.ModelChoiceField(queryset=Department.objects.all())
 
-        if password and password_confirm and password != password_confirm:
-            raise forms.ValidationError("Passwords do not match.")
-        
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'department']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if CustomUser.objects.filter(email=email).exists():
+            raise ValidationError("This email is already in use.")
+        return email
+
+# Form for updating the Profile, including the department
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['department', 'nationalID', 'contact_number']   
+
 
 class ResetPasswordForm(forms.Form):
     new_password = forms.CharField(widget=forms.PasswordInput, label="New Password")

@@ -7,3 +7,66 @@
   <button type="submit">Add Department</button>
 </form>
 {% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Department</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      label {
+        margin-bottom: 5px;
+      }
+      input {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: calc(100% - 22px);
+      }
+      input[type="submit"] {
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        padding: 10px 0;
+      }
+      input[type="submit"]:hover {
+        background-color: #5a6268;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Create Department</h2>
+      <form
+        method="post"
+        action="{% url 'custom_admin_dashboard:admin_add_department' %}"
+      >
+        {% csrf_token %} {{ form.name.label_tag }} {{ form.name }}
+        <input type="submit" value="Create Department" />
+      </form>
+    </div>
+  </body>
+</html>

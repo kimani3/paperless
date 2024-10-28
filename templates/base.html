@@ -1,6 +1,4 @@
-<!--- base templaye -->
-<!-- prettier-ignore -->
-
+<!--- base.html template -->
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
@@ -8,6 +6,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/delete_form.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
     {% block extra_css %}{% endblock %}
     <title>{% block title %}Document Management System{% endblock %}</title>
   </head>
@@ -57,12 +62,21 @@
         </ul>
         <a href="#">
           <div class="profile">
+            {% if profile_data.profile_image %}
             <img
-              src="{% static 'images/profile.jpg' %}"
+              src="{% url 'documents:serve_profile_image' user.id %}"
               alt="profile picture"
               width="50"
               height="50"
             />
+            {% else %}
+            <img
+              src="{% static 'images/user.png' %}"
+              alt="Default Profile Picture"
+              width="50"
+              height="50"
+            />
+            {% endif %}
             <span>{{ user.username }}</span>
           </div>
         </a>
@@ -101,8 +115,41 @@
 
       <section>
         <div class="container">
-          {% if messages %} {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          <!-- Profile completion alert at the top of the container -->
+          {% if profile_data and not profile_data.is_profile_complete %}
+          <div
+            class="alert alert-warning"
+            style="
+              cursor: pointer;
+              text-align: center;
+              padding: 10px;
+              margin-bottom: 15px;
+              background-color: #fff3cd;
+              border: 1px solid #ffeeba;
+              border-radius: 5px;
+              color: #856404;
+            "
+            onclick="window.location.href='{% url 'documents:complete_profile' %}'"
+          >
+            ⚠️ Your profile is not complete! Completion: {{
+            profile_data.completion_percentage }}%
+            <button
+              class="close-alert"
+              onclick="this.parentElement.style.display='none';"
+            >
+              &times;
+            </button>
+          </div>
+          {% endif %} {% if messages %} {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+            <button
+              class="close-alert"
+              onclick="this.parentElement.style.display='none';"
+            >
+              &times;
+            </button>
+          </div>
           {% endfor %} {% endif %}
           <!-- prettier-ignore-start -->
           {% block content %} {% endblock %}
@@ -116,5 +163,18 @@
         <p>COPYRIGHT | SAMUEL 2024 | +254 712 345 678, +245 787 654 321</p>
       </div>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const alerts = document.querySelectorAll(".alert");
+        alerts.forEach((alert) => {
+          // Set a timer to hide the alert after 1 minute (60000 ms)
+          setTimeout(() => {
+            alert.style.display = "none";
+          }, 60000);
+        });
+      });
+    </script>
   </body>
 </html>

@@ -1,9 +1,21 @@
 <!-- prettier-ignore -->
-{% extends 'admin_base.html' %} {% block title %}Edit Document{% endblock %} 
- {% block content %}
+{% extends 'admin_base.html' %} 
+{% block title %}Edit Document{% endblock %} 
+{% block content %}
+
 <h2>Edit Document</h2>
 <form method="post" enctype="multipart/form-data">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Save Changes</button>
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="id_file_content" class="col-form-label">File:</label>
+    <input
+      type="file"
+      name="file_content"
+      id="id_file_content"
+      class="form-control"
+      accept="application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    />
+  </div>
+  <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
 {% endblock %}

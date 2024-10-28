@@ -16,8 +16,9 @@ urlpatterns = [
     path('view_document/<int:document_id>/', views.view_document_content, name='view_document_content'),  # New URL
     path('departments/<int:department_id>/', views.department_detail, name='department_detail'),
     path('search/', views.search, name='search'),
+    path('resend_verification_code/', views.resend_verification_code, name='resend_verification_code'),  # New URL
     
     # Add profile completion URLs
-    path('complete_profile/step1/', views.complete_profile_step1, name='complete_profile_step1'),
-    path('complete_profile/step2/', views.complete_profile_step2, name='complete_profile_step2'),
+    path('profile-image/<int:user_id>/', views.serve_profile_image, name='serve_profile_image'),
+    path('complete_profile/', views.complete_profile, name='complete_profile'),
 ]

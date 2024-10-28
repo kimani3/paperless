@@ -1,0 +1,46 @@
+{% extends 'admin_base.html' %} {% load static %}
+<!-- prettier-ignore -->
+{% block content %}
+<div>
+  <h2>Complete Your Profile</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="table-responsive">
+      <table class="table">
+        <tbody>
+          <tr>
+            <td>{{ form.nationalID.label }}</td>
+            <td>{{ form.nationalID }}</td>
+          </tr>
+          <tr>
+            <td>{{ form.contact_number.label }}</td>
+            <td>{{ form.contact_number }}</td>
+          </tr>
+          <tr>
+            <td>Profile Image</td>
+            <td>
+              <input type="file" name="profile_image" accept="image/*" />
+              <!-- Optionally, you can display an existing image here if needed -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    {% if form.errors %}
+    <div class="alert alert-danger">
+      {% for field, errors in form.errors.items %}
+      <p>{{ field|capfirst }}: {{ errors|join:", " }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="{% url 'documents:home' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+  <br />
+  {% if messages %} {% for message in messages %}
+  <div class="{{ message.tags }}">{{ message }}</div>
+  {% endfor %} {% endif %}
+</div>
+{% endblock %}

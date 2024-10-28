@@ -1,14 +1,35 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from documents.models import Department, Folder, Document, CustomUser
+from documents.models import Department, Folder, Document, Profile
+from documents.forms import ProfileCompletionForm
 from django.contrib.auth.models import User
-from .forms import DepartmentForm, FolderForm, DocumentForm, RegistrationForm
+from .forms import DepartmentForm, FolderForm, DocumentForm, RegistrationForm, EditUserForm
 from django.db.models import Q
 from django.http import HttpResponse
 import base64
 import os
-from datetime import date
+import random
+import string
+from django.core.mail import send_mail,BadHeaderError
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.urls import reverse  # Import reverse for URL generation
+
+CustomUser = get_user_model()
+
+
+def serve_profile_image(request, user_id):
+    # Fetch the user's profile
+    profile = get_object_or_404(Profile, user_id=user_id)
+    
+    # Check if the profile_image field has data
+    if profile.profile_image:
+        # Return the image as an HttpResponse with appropriate content type
+        return HttpResponse(profile.profile_image, content_type="image/jpeg")  # Adjust the content type if necessary
+    else:
+        # Handle the case where there is no profile image
+        return HttpResponse(status=404)  # Or you could return a default image here if preferred
 
 def admin_required(login_url=None):
     return user_passes_test(lambda u: u.is_superuser, login_url=login_url)
@@ -16,7 +37,21 @@ def admin_required(login_url=None):
 @login_required
 @admin_required(login_url='/login/')
 def admin_dashboard(request):
-    return render(request, 'custom_admin_dashboard/admin_dashboard.html')
+    try:
+        profile = Profile.objects.get(user=request.user)  # Get the user's profile
+    except Profile.DoesNotExist:
+        messages.error(request, "Profile not found.")
+        return redirect('custom_admin_dashboard:admin_dashboard')  # Adjust this redirect as necessary
+
+    # Calculate the profile completion percentage
+    profile_completion_percentage = profile.completion_percentage()  # Use the model method
+
+    # Render the dashboard template with the profile completion percentage
+    return render(request, 'custom_admin_dashboard/admin_dashboard.html', {
+        'profile_completion_percentage': profile_completion_percentage,
+        # Include other context variables as needed
+    })
+
 
 @login_required
 @admin_required(login_url='/login/')
@@ -54,6 +89,54 @@ def search(request):
     
     return render(request, 'custom_admin_dashboard/search_results.html', context)
 
+
+@login_required
+@admin_required(login_url='/login/')
+def admin_complete_profile(request):
+    try:
+        profile = Profile.objects.get(user=request.user)  # Get the user's profile
+    except Profile.DoesNotExist:
+        messages.error(request, "Profile not found.")
+        return redirect('custom_admin_dashboard:admin_dashboard')  # Redirect to admin dashboard if profile doesn't exist
+
+    if request.method == 'POST':
+        form = ProfileCompletionForm(request.POST, instance=profile)  # Use the form for other fields
+        uploaded_file = request.FILES.get('profile_image')  # Get the uploaded file
+
+        if form.is_valid():
+            profile = form.save(commit=False)  # Save form data without committing to the database
+            
+            # Convert the uploaded image to binary format and save it
+            if uploaded_file:
+                document_data = uploaded_file.read()  # Read the uploaded file into memory
+                profile.profile_image = document_data  # Save the binary data directly
+            
+            # Check if all required fields are filled before marking profile as complete
+            all_fields_filled = all([
+                profile.nationalID,
+                profile.contact_number,
+                profile.department,
+                profile.profile_image,  # Ensure the image is uploaded
+                profile.created_by  # Ensure the creator is set
+            ])
+            profile.is_profile_complete = all_fields_filled  # Update the completion status
+            
+            profile.save()  # Save the profile
+            messages.success(request, "Your profile has been successfully completed!")
+            return redirect('custom_admin_dashboard:admin_dashboard')  # Redirect to the admin dashboard after completion
+        else:
+            messages.error(request, "Please correct the errors below.")
+
+    else:
+        form = ProfileCompletionForm(instance=profile)  # Pre-fill the form with existing profile data
+
+    # Calculate the profile completion percentage using the model method
+    profile_completion_percentage = profile.completion_percentage()
+
+    return render(request, 'custom_admin_dashboard/complete_profile.html', {
+        'form': form,
+        'profile_completion_percentage': profile_completion_percentage,
+    })
 
 # departrment management
 @login_required
@@ -191,7 +274,7 @@ def admin_documents(request):
 @admin_required(login_url='/login/')
 def admin_add_document(request, department_id=None, folder_id=None):
     if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
+        form = DocumentForm(request.POST, request.FILES)  # Include request.FILES here
         if form.is_valid():
             document = form.save(commit=False)  # Save the document instance without committing
 
@@ -227,6 +310,7 @@ def admin_add_document(request, department_id=None, folder_id=None):
         form = DocumentForm()
 
     return render(request, 'custom_admin_dashboard/admin_add_document.html', {'form': form})
+
 
 
 @login_required
@@ -301,42 +385,154 @@ def admin_view_document_content(request, document_id):
 @login_required
 @admin_required(login_url='/login/')
 def manage_users(request):
-    users = CustomUser.objects.all()  # Change this to CustomUser
+    users = User.objects.all()  # Change this to CustomUser
     return render(request, 'custom_admin_dashboard/admin_manage_user.html', {'users': users})
+
+
+@login_required
+@admin_required(login_url='/login/')
+def admin_pending_users(request):
+    # Fetch users that are inactive (pending activation)
+    pending_users = User.objects.filter(is_active=False)
+    departments = Department.objects.all()  # Fetch all departments
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        action = request.POST.get('action')
+        department_id = request.POST.get('department_id')
+
+        user = get_object_or_404(User, id=user_id)
+
+        if action == 'activate':
+            # Assign department if provided
+            if department_id:
+                department = Department.objects.get(id=department_id)
+                profile = Profile.objects.get(user=user)
+                profile.department = department
+            
+            user.is_active = True
+            user.save()
+            profile.save()  # Save the profile if department is assigned
+
+            # Generate the login URL
+            login_url = request.build_absolute_uri(reverse('documents:login'))  # Update to match your login URL name
+
+            # Send activation email
+            send_mail(
+                'Your Account Has Been Activated',
+                f'Hello {user.username},\n\nYour account has been activated and you have been assigned to the {department.name if department_id else "No department"} department.\n\n'
+                f'You can log in using the following link:\n{login_url}',
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False,
+            )
+
+            messages.success(request, f"{user.username} has been activated and assigned to {department.name if department_id else 'No department'}.")
+        
+        elif action == 'deny':
+            # Send denial email
+            send_mail(
+                'Your Account Registration Has Been Denied',
+                f'Hello {user.username},\n\nUnfortunately, your account registration has been denied.',
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False,
+            )
+            user.delete()  # Alternatively, you could set a flag instead of deleting
+            messages.warning(request, f"{user.username}'s registration has been denied.")
+        
+        return redirect('custom_admin_dashboard:pending_users')
+
+    return render(request, 'custom_admin_dashboard/admin_pending_users.html', {
+        'pending_users': pending_users,
+        'departments': departments,  # Pass departments to the template
+    })
+
 
 @login_required
 @admin_required(login_url='/login/')
 def admin_add_user(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)  # Use your RegistrationForm
+        form = RegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'User added successfully.')
+            email = form.cleaned_data.get("email")
+            department = form.cleaned_data.get("department")
+            username = email.split('@')[0]
+            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+            # Check if user already exists
+            if CustomUser.objects.filter(email=email).exists():
+                messages.error(request, "A user with this email already exists.")
+                return render(request, 'custom_admin_dashboard/admin_add_user.html', {'form': form})
+            
+            # Create the user
+            user = CustomUser.objects.create_user(username=username, email=email, password=password)
+
+            try:
+                # Check for existing profile or create a new one
+                profile, created = Profile.objects.get_or_create(user=user, defaults={'department': department})
+                if not created:
+                    # If a profile already existed, update the department if needed
+                    profile.department = department
+                    profile.save()
+
+                # Prepare email content
+                subject = "Your New Account Information"
+                message = (
+                    f"Hello,\n\nAn account has been created for you.\n\n"
+                    f"Username: {username}\nPassword: {password}\n\n"
+                    "Please log in and change your password after your first login."
+                )
+
+                # Send email with login credentials
+                send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+                messages.success(request, 'User added successfully, and email sent with login credentials.')
+            except (BadHeaderError, Exception) as e:
+                # Clean up if there's an error
+                user.delete()  # Clean up the user if profile creation or email fails
+                messages.error(request, f"An error occurred: {str(e)}")
+                return render(request, 'custom_admin_dashboard/admin_add_user.html', {'form': form})
+
             return redirect('custom_admin_dashboard:manage_users')
+
     else:
         form = RegistrationForm()
+
     return render(request, 'custom_admin_dashboard/admin_add_user.html', {'form': form})
 
 @login_required
 @admin_required(login_url='/login/')
 def admin_edit_user(request, user_id):
-    user = get_object_or_404(CustomUser, id=user_id)  # Change this to CustomUser
+    user = get_object_or_404(CustomUser, id=user_id)  # Fetch the user
+    profile = get_object_or_404(Profile, user=user)  # Fetch the associated profile
+
     if request.method == 'POST':
-        form = RegistrationForm(request.POST, instance=user)  # Use your RegistrationForm
+        form = EditUserForm(request.POST, instance=user)  # Create form instance with user data
         if form.is_valid():
-            form.save()
-            messages.success(request, 'User updated successfully.')
-            return redirect('custom_admin_dashboard:manage_users')
+            updated_user = form.save()  # Save the user first
+            
+            # Update the profile department if changed
+            new_department_id = request.POST.get('department')  # Get the new department from POST data
+            if new_department_id:
+                profile.department_id = new_department_id  # Update the profile's department
+            
+            profile.save()  # Save the profile changes
+            
+            messages.success(request, 'User updated successfully.')  # Success message
+            return redirect('custom_admin_dashboard:manage_users')  # Redirect to manage users
+
     else:
-        form = RegistrationForm(instance=user)
-    return render(request, 'custom_admin_dashboard/admin_edit_user.html', {'form': form, 'user': user})
+        form = EditUserForm(instance=user)  # Create form instance for GET request
+
+    return render(request, 'custom_admin_dashboard/admin_edit_user.html', {'form': form, 'user': user, 'profile': profile})
+
 
 
 
 @login_required
 @admin_required(login_url='/login/')
 def admin_delete_user(request, user_id):
-    user = get_object_or_404(CustomUser, id=user_id)  # Change this to CustomUser
+    user = get_object_or_404(User, id=user_id)  # Change this to CustomUser
     if request.method == 'POST':
         user.delete()
         messages.success(request, 'User deleted successfully.')

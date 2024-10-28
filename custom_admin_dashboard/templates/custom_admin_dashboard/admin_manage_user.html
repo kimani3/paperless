@@ -1,16 +1,17 @@
 <!-- manage_users.html -->
-<!-- prettier-ignore -->
 {% extends 'admin_base.html' %}
 <!-- prettier-ignore -->
 {% block title %}Manage Users{% endblock %}
 <!-- prettier-ignore -->
 {% block content %}
+
 <h2>Manage Users</h2>
 <a
   href="{% url 'custom_admin_dashboard:admin_add_user' %}"
-  class="btn btn-primary"
+  class="btn-action btn-warning"
   >Add User</a
 >
+<!-- Table Structure -->
 <table class="table">
   <thead>
     <tr>
@@ -29,17 +30,20 @@
       <td>
         <a
           href="{% url 'custom_admin_dashboard:admin_edit_user' user.id %}"
-          class="btn btn-warning"
-          >Edit</a
+          class="btn-action btn-warning"
         >
+          <i class="fas fa-pencil-alt"></i> Edit
+        </a>
         <a
           href="{% url 'custom_admin_dashboard:admin_delete_user' user.id %}"
-          class="btn btn-danger"
-          >Delete</a
+          class="btn-action btn-danger"
         >
+          <i class="fas fa-trash-alt"></i> Delete
+        </a>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
 {% endblock %}

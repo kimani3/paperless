@@ -2,10 +2,12 @@
 {% extends 'admin_base.html' %} {% block title %}Manage Departments{% endblock %} 
 {% block content %}
 <h2>Manage Departments</h2>
-<a href="{% url 'custom_admin_dashboard:admin_add_department' %}"
+<a
+  href="{% url 'custom_admin_dashboard:admin_add_department' %} "
+  class="btn-action btn-warning"
   >Add New Department</a
 >
-<table>
+<table class="table">
   <thead>
     <tr>
       <th>Name</th>
@@ -19,16 +21,22 @@
       <td>
         <a
           href="{% url 'custom_admin_dashboard:admin_view_department' department.id %}"
-          >View</a
+          class="btn-action btn-warning"
         >
+          <i class="fas fa-eye"></i> View
+        </a>
         <a
           href="{% url 'custom_admin_dashboard:admin_edit_department' department.id %}"
-          >Edit</a
+          class="btn-action btn-warning"
         >
+          <i class="fas fa-pencil-alt"></i> Edit
+        </a>
         <a
           href="{% url 'custom_admin_dashboard:admin_delete_department' department.id %}"
-          >Delete</a
+          class="btn-action btn-danger"
         >
+          <i class="fas fa-trash-alt"></i> Delete
+        </a>
       </td>
     </tr>
     {% endfor %}

@@ -1,11 +1,14 @@
 <!-- prettier-ignore -->
-{% extends 'admin_base.html' %} {% block title %}Delete Department{% endblock %} 
+{% extends 'admin_base.html' %}
+{% block title %}Delete Department{% endblock %} 
 {% block content %}
-<h2>Delete Department</h2>
-<p>Are you sure you want to delete the department "{{ department.name }}"?</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Yes, Delete</button>
-  <a href="{% url 'custom_admin_dashboard:admin_departments' %}">Cancel</a>
-</form>
+<div class="delete-form">
+  <h2>Delete Department</h2>
+  <p>Are you sure you want to delete the department "{{ department.name }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+    <a href="{% url 'custom_admin_dashboard:admin_departments' %}">Cancel</a>
+  </form>
+</div>
 {% endblock %}

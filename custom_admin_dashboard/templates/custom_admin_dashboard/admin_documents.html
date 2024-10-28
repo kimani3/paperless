@@ -2,7 +2,7 @@
 {% extends 'admin_base.html' %} {% block title %}Manage Documents{% endblock %} 
  {% block content %}
 <h2>Manage Documents</h2>
-<table>
+<table class="table">
   <thead>
     <tr>
       <th>Name</th>
@@ -18,16 +18,23 @@
       <td>
         <a
           href="{% url 'custom_admin_dashboard:admin_view_document_content' document.id %}"
-          >View</a
+          class="btn-action btn-warning"
         >
+          <i class="fas fa-eye"></i> View
+        </a>
         <a
           href="{% url 'custom_admin_dashboard:admin_edit_document' document.id %}"
-          >Edit</a
+          class="btn-action btn-warning"
         >
+          <i class="fas fa-pencil-alt"></i> Edit
+        </a>
         <a
           href="{% url 'custom_admin_dashboard:admin_delete_document' document.id %}"
-          >Delete</a
+          class="btn-action btn-danger"
+          onclick="return confirm('Are you sure you want to delete this document?');"
         >
+          <i class="fas fa-trash-alt"></i> Delete
+        </a>
       </td>
     </tr>
     {% endfor %}

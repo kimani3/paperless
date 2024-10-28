@@ -1,4 +1,47 @@
 <!-- admin_edit_user.html -->
+{% extends 'admin_base.html' %}
+<!-- prettier-ignore -->
+{% block title %}Edit User{% endblock %}
+<!-- prettier-ignore -->
+{% block content %}
+<h2>Edit User: {{ user.username }}</h2>
+<form method="POST">
+  {% csrf_token %}
+  <div class="table-responsive">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>{{ form.username.label }}</td>
+          <td>{{ form.username }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.email.label }}</td>
+          <td>{{ form.email }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.department.label }}</td>
+          <td>{{ form.department }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.is_active.label }}</td>
+          <td>{{ form.is_active }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.is_superuser.label }}</td>
+          <td>{{ form.is_superuser }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <button type="submit" class="btn-action btn-warning">Update User</button>
+  <a
+    href="{% url 'custom_admin_dashboard:manage_users' %}"
+    class="btn-action btn-danger"
+    >Cancel</a
+  >
+</form>
+{% endblock %} {% comment %}
+<!-- admin_edit_user.html -->
 <!-- prettier-ignore -->
 {% extends 'admin_base.html' %} {% block title %}Edit
 User{% endblock %} 
@@ -14,4 +57,4 @@ User{% endblock %}
     >Cancel</a
   >
 </form>
-{% endblock %}
+{% endblock %} {% endcomment %}

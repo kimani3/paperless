@@ -1,9 +1,36 @@
 <!-- prettier-ignore -->
-{% extends 'admin_base.html' %} {% block title %}Add Folder{% endblock %} 
- {% block content %}
+{% extends 'admin_base.html' %}
+<!-- prettier-ignore -->
+{% block title %}Add Folder{%endblock %}
+<!-- prettier-ignore -->
+{% block content %}
 <h2>Add Folder</h2>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Add Folder</button>
+<form
+  method="POST"
+  action="{% url 'custom_admin_dashboard:admin_add_folder' %}"
+>
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="id_name" class="col-form-label">Folder Name:</label>
+    <input type="text" name="name" id="id_name" class="form-control" required />
+  </div>
+
+  <div class="form-group">
+    <label for="id_department" class="col-form-label">Department:</label>
+    {{ form.department }}
+  </div>
+
+  <!-- Display form errors if any -->
+  {% if form.errors %}
+  <div class="alert alert-danger">
+    {% for field in form %} {% for error in field.errors %}
+    <p>{{ error }}</p>
+    {% endfor %} {% endfor %} {% for error in form.non_field_errors %}
+    <p>{{ error }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <button type="submit" class="btn btn-primary">Add Folder</button>
 </form>
 {% endblock %}

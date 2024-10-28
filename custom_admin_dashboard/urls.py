@@ -27,5 +27,8 @@ urlpatterns = [
     path('documents/delete/<int:document_id>/', views.admin_delete_document, name='admin_delete_document'),
     path('departments/view/<int:department_id>/', views.admin_view_department, name='admin_view_department'),
     path('folders/view/<int:folder_id>/', views.admin_view_folder, name='admin_view_folder'),
+    path('profile-image/<int:user_id>/', views.serve_profile_image, name='serve_profile_image'),
+    path('complete_profile/', views.admin_complete_profile, name='admin_complete_profile'),
     path('search/', views.search, name='search'),  # Path for search view
+    path('pending-users/', views.admin_pending_users, name='admin_pending_users'),  # Pending users for approval
 ]

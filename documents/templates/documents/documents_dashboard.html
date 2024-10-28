@@ -1,6 +1,25 @@
 <!-- prettier-ignore -->
-{% extends 'base.html' %} {% block title %}Home{% endblock %} 
+{% extends 'base.html' %} {% load static %}{% block title %}Home{% endblock %} 
 {% block content %}
 <h2>Welcome</h2>
+<div class="profile">
+  {% if profile_data.username %}
+  <p>Welcome, {{ profile_data.username }}!</p>
+  {% endif %} {% if profile_data.profile_image %}
+  <img
+    src="data:image/png;base64,{{ profile_data.profile_image }}"
+    alt="Profile Picture"
+    width="50"
+    height="50"
+  />
+  {% else %}
+  <img
+    src="{% static 'images/user.png' %}"
+    alt="Default Profile Picture"
+    width="50"
+    height="50"
+  />
+  {% endif %}
+</div>
 
 {% endblock %}

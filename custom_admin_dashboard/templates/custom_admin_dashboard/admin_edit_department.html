@@ -1,9 +1,22 @@
 <!-- prettier-ignore -->
-{% extends 'admin_base.html' %} {% block title %}Edit Department{% endblock %} 
- {% block content %}
+{% extends 'admin_base.html' %} 
+{% block title %}Edit Department{% endblock %} 
+{% block content %}
+
 <h2>Edit Department</h2>
 <form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Save Changes</button>
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="id_name" class="col-form-label">Department Name:</label>
+    <input
+      type="text"
+      name="name"
+      id="id_name"
+      value="{{ form.name.value }}"
+      class="form-control"
+      required
+    />
+  </div>
+  <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
 {% endblock %}

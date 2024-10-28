@@ -1,0 +1,97 @@
+/* Custom Table Styling  */
+/* General Table Styling */
+.table {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  color: #212529;
+  border-collapse: collapse;
+}
+
+/* Header Styling */
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* Row Styling */
+.table tbody tr {
+  border-top: 1px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Cell Styling */
+.table th,
+.table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+  text-align: left;
+}
+
+/* First Column Alignment */
+.table tbody th[scope="row"] {
+  font-weight: bold;
+}
+
+/* Colspan Cell Styling */
+.table tbody td[colspan="2"] {
+  text-align: left;
+}
+
+/* Button Styling */
+.btn-action {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  min-width: 80px;
+  margin-right: 0.5rem;
+}
+
+/* Edit Button */
+.btn-warning {
+  background-color: #ffc107;
+  border: none;
+}
+.btn-warning:hover {
+  background-color: #e0a800;
+  color: #fff;
+}
+
+/* Delete Button */
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+  color: #fff;
+}
+
+/* Optional: Add Responsive Styling */
+@media (max-width: 576px) {
+  .table thead {
+    display: none;
+  }
+  .table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+  }
+}

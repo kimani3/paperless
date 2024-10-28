@@ -1,12 +1,35 @@
-<!-- admin_add_user.html -->
 <!-- prettier-ignore -->
-{% extends 'admin_base.html' %} {% block title %}Add
-User{% endblock %} 
+{% extends 'admin_base.html' %}
+<!-- prettier-ignore -->
+{% block title %}Add User{% endblock %}
+<!-- prettier-ignore -->
 {% block content %}
 <h2>Add User</h2>
-<form method="POST">
-  {% csrf_token %} {{ form.as_p }}
-  <!-- Render the form fields -->
+<form method="POST" action="{% url 'custom_admin_dashboard:admin_add_user' %}">
+  {% csrf_token %}
+  <div class="table-responsive">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>{{ form.email.label }}</td>
+          <td>{{ form.email }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.department.label }}</td>
+          <td>{{ form.department }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  {% if form.errors %}
+  <div class="alert alert-danger">
+    {% for field, errors in form.errors.items %}
+    <p>{{ field|capfirst }}: {{ errors|join:", " }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <button type="submit" class="btn btn-primary">Add User</button>
   <a
     href="{% url 'custom_admin_dashboard:manage_users' %}"
