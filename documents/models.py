@@ -4,6 +4,8 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+import base64
+
 
 
 class Department(models.Model):
@@ -26,15 +28,9 @@ class Profile(models.Model):
     nationalID = models.CharField(max_length=20, unique=True, null=True, blank=True)
     contact_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    profile_image = models.BinaryField()  # Binary field for profile image
-    created_by = models.ForeignKey(  
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='profiles_created'
-    )
+    profile_image = models.BinaryField(null=True, blank=True)  # Allow null and blank if not provided
     department = models.ForeignKey(
-        Department, 
+        'Department', 
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True, 
@@ -47,8 +43,14 @@ class Profile(models.Model):
 
     def completion_percentage(self):
         total_fields = 5  # Adjust this if more fields are added
-        filled_fields = sum(1 for field in [self.nationalID, self.department, self.contact_number] if field)
+        filled_fields = sum(1 for field in [self.nationalID, self.contact_number, self.department] if field)
         return (filled_fields / total_fields) * 100
+
+    def save(self, *args, **kwargs):
+        percentage = self.completion_percentage()
+        self.is_profile_complete = percentage >= 100
+        super(Profile, self).save(*args, **kwargs)
+
 
 
 

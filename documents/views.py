@@ -18,17 +18,6 @@ from django.http import HttpResponse
 
 
 
-def serve_profile_image(request, user_id):
-    # Fetch the user's profile
-    profile = get_object_or_404(Profile, user_id=user_id)
-    
-    # Check if the profile_image field has data
-    if profile.profile_image:
-        # Return the image as an HttpResponse with appropriate content type
-        return HttpResponse(profile.profile_image, content_type="image/jpeg")  # Adjust the content type if necessary
-    else:
-        # Handle the case where there is no profile image
-        return HttpResponse(status=404)  # Or you could return a default image here if preferred
 
 def generate_username(email):
     username_base = email.split('@')[0]
@@ -47,7 +36,7 @@ def register(request):
             user = form.save(commit=False)
             user.is_active = False  # User is inactive until email verification
             user.username = generate_username(user.email)
-            user.save()  # Save user to database
+            user.save()  # Save user to the database
 
             # Store user ID in session for email verification flow
             request.session['user_id'] = user.id
@@ -58,9 +47,8 @@ def register(request):
             messages.error(request, "Please correct the errors below.")
     else:
         form = RegistrationForm()
-    
-    return render(request, 'register.html', {'form': form})
 
+    return render(request, 'register.html', {'form': form})
 
 def send_verification_code(user):
     code = random.randint(1000, 9999)
@@ -151,106 +139,91 @@ def user_login(request):
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
-@login_required  # Ensure only logged-in users can access this view
-def complete_profile(request):
+def get_profile_data(user):
     try:
-        profile = Profile.objects.get(user=request.user)  # Get the user's profile
+        profile = Profile.objects.get(user=user)
+        profile_image_base64 = None
+        if profile.profile_image:
+            profile_image_base64 = base64.b64encode(profile.profile_image).decode('utf-8')
+        department_name = profile.department.name if profile.department else "N/A"
+        return {
+            'profile_image_base64': profile_image_base64,
+            'department_name': department_name
+        }
+    except Profile.DoesNotExist:
+        return {
+            'profile_image_base64': None,
+            'department_name': "N/A"
+        }
+
+@login_required
+def complete_profile(request):
+    profile_data = get_profile_data(request.user)
+    
+    try:
+        profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         messages.error(request, "Profile not found.")
-        return redirect('documents:home')  # Redirect to home if profile doesn't exist
+        return redirect('documents:home')
 
     if request.method == 'POST':
-        form = ProfileCompletionForm(request.POST, instance=profile)  # Use the form for other fields
-        uploaded_file = request.FILES.get('profile_image')  # Get the uploaded file
+        form = ProfileCompletionForm(request.POST, instance=profile)
+        uploaded_file = request.FILES.get('profile_image')
 
         if form.is_valid():
-            profile = form.save(commit=False)  # Save form data without committing to the database
-            
-            # Convert the uploaded image to binary format and save it
+            profile = form.save(commit=False)
             if uploaded_file:
-                document_data = uploaded_file.read()  # Read the uploaded file into memory
-                profile.profile_image = document_data  # Save the binary data directly
-            
-            # Check if all required fields are filled before marking profile as complete
-            all_fields_filled = all([
+                profile.profile_image = uploaded_file.read()
+            profile.is_profile_complete = all([
                 profile.nationalID,
                 profile.contact_number,
                 profile.department,
-                profile.profile_image,  # Ensure the image is uploaded
-                profile.created_by  # Ensure the creator is set
+                profile.profile_image
             ])
-            profile.is_profile_complete = all_fields_filled  # Update the completion status
-            
-            profile.save()  # Save the profile
+            profile.save()
             messages.success(request, "Your profile has been successfully completed!")
-            return redirect('documents:home')  # Redirect to the home page after completion
+            return redirect('documents:home')
         else:
             messages.error(request, "Please correct the errors below.")
-
     else:
-        form = ProfileCompletionForm(instance=profile)  # Pre-fill the form with existing profile data
+        form = ProfileCompletionForm(instance=profile)
 
-    # Calculate the profile completion percentage using the model method
     profile_completion_percentage = profile.completion_percentage()
 
-    return render(request, 'documents/complete_profile.html', {
+    context = {
         'form': form,
         'profile_completion_percentage': profile_completion_percentage,
-    })
-
-def get_user_profile(request):
-    """Helper function to retrieve user profile data."""
-    # Initialize variables
-    profile_image = None
-    username = None
-    
-    # Check if the user is authenticated
-    if request.user.is_authenticated:
-        # Use get_object_or_404 for better error handling
-        profile = get_object_or_404(Profile, user=request.user)  # Get the user's profile
-        
-        # Encode the profile image to base64 if it exists
-        if profile.profile_image:
-            profile_image = base64.b64encode(profile.profile_image).decode('utf-8')
-        
-        username = request.user.username  # Get the username if authenticated
-    
-    return {
-        'profile_image': profile_image,
-        'username': username,
     }
+    context.update(profile_data)
+
+    return render(request, 'documents/complete_profile.html', context)
 
 @login_required
 def home(request):
-    try:
-        # Retrieve user profile data
-        profile_data = Profile.objects.get(user=request.user)
-        profile_completion_percentage = profile_data.completion_percentage()  # Get profile completion percentage
-        
-        # Get the user's department
-        user_department = profile_data.department  # This will get the department associated with the user's profile
+    profile_data = get_profile_data(request.user)
 
+    try:
+        profile = Profile.objects.get(user=request.user)
+        profile_completion_percentage = profile.completion_percentage()
+        user_department = profile.department
     except Profile.DoesNotExist:
         messages.error(request, "Profile not found.")
-        return redirect('documents:complete_profile')  # Redirect if no profile found
+        return redirect('documents:complete_profile')
 
-    # If user has no department, handle accordingly (optional)
-    if user_department is None:
-        messages.warning(request, "You do not belong to any department.")
-        user_department_name = "N/A"  # Fallback if no department is found
-    else:
-        user_department_name = user_department.name
+    user_department_name = user_department.name if user_department else "N/A"
 
     context = {
-        'user_department_name': user_department_name,  # Include the user's department name in the context
-        'messages': messages.get_messages(request),
-        'profile_data': profile_data,  # Merge profile data into the context
-        'profile_completion_percentage': profile_completion_percentage,  # Include profile completion percentage
+        'profile_data': profile,
+        'profile_completion_percentage': profile_completion_percentage,
+        'user_department_name': user_department_name,
     }
+    context.update(profile_data)
 
     return render(request, 'documents/documents_dashboard.html', context)
 
+@login_required
 def search(request):
+    profile_data = get_profile_data(request.user)
     query = request.GET.get('q')
     departments = Department.objects.filter(name__icontains=query) if query else Department.objects.none()
     folders = Folder.objects.filter(name__icontains=query) if query else Folder.objects.none()
@@ -262,14 +235,15 @@ def search(request):
         'folders': folders,
         'documents': documents,
     }
+    context.update(profile_data)
 
     return render(request, 'documents/search_results.html', context)
 
 @login_required
 def view_document_content(request, document_id):
+    profile_data = get_profile_data(request.user)
     document = get_object_or_404(Document, id=document_id)
     file_content = base64.b64decode(document.file_content)
-
     content_type = 'application/octet-stream'
     is_pdf = document.file_extension == '.pdf'
     is_image = document.file_extension in ['.jpg', '.jpeg', '.png']
@@ -277,26 +251,29 @@ def view_document_content(request, document_id):
 
     base64_file_content = base64.b64encode(file_content).decode('utf-8')
 
-    return render(request, 'documents/document_content.html', {
+    context = {
         'document': document,
         'file_content': base64_file_content,
         'content_type': content_type,
         'is_pdf': is_pdf,
         'is_image': is_image,
         'is_docx': is_docx,
-    })
+    }
+    context.update(profile_data)
+
+    return render(request, 'documents/document_content.html', context)
 
 @login_required
 def upload_document(request, department_id=None, folder_id=None):
+    profile_data = get_profile_data(request.user)
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            document = form.save(commit=False)  # Save the document instance without committing
+            document = form.save(commit=False)
             uploaded_file = request.FILES.get('file_content')
 
             if uploaded_file:
-                document_data = uploaded_file.read()
-                document.file_content = base64.b64encode(document_data)
+                document.file_content = base64.b64encode(uploaded_file.read())
                 document.created_by = request.user
                 document.file_extension = os.path.splitext(uploaded_file.name)[1]
 
@@ -319,43 +296,63 @@ def upload_document(request, department_id=None, folder_id=None):
     else:
         form = DocumentForm()
 
-    return render(request, 'documents/upload_document.html', {'form': form})
+    context = {
+        'form': form,
+    }
+    context.update(profile_data)
+
+    return render(request, 'documents/upload_document.html', context)
 
 @login_required
 def create_folder(request):
+    profile_data = get_profile_data(request.user)
     if request.method == 'POST':
         form = FolderForm(request.POST)
         if form.is_valid():
             folder = form.save(commit=False)
             folder.created_by = request.user
-            folder.department = request.user.profile.department  # Ensure the user has a profile
+            folder.department = request.user.profile.department
             folder.save()
             return redirect('documents:department_detail', department_id=folder.department.id)
     else:
         form = FolderForm()
-    return render(request, 'documents/create_folder.html', {'form': form})
+
+    context = {
+        'form': form,
+    }
+    context.update(profile_data)
+
+    return render(request, 'documents/create_folder.html', context)
 
 @login_required
 def folder_detail(request, folder_id):
+    profile_data = get_profile_data(request.user)
     folder = get_object_or_404(Folder, id=folder_id)
     documents = Document.objects.filter(folder=folder)
 
-    return render(request, 'documents/document_list.html', {
+    context = {
         'documents': documents,
         'folder': folder,
-    })
+    }
+    context.update(profile_data)
+
+    return render(request, 'documents/document_list.html', context)
 
 @login_required
 def department_detail(request, department_id):
+    profile_data = get_profile_data(request.user)
     department = get_object_or_404(Department, id=department_id)
     folders = department.folders.all()
     documents = Document.objects.filter(folder__department=department)
 
-    return render(request, 'documents/department_details.html', {
+    context = {
         'department': department,
         'folders': folders,
         'documents': documents,
-    })
+    }
+    context.update(profile_data)
+
+    return render(request, 'documents/department_details.html', context)
 
 def user_logout(request):
     logout(request)

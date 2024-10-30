@@ -79,7 +79,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'documents.context_processors.departments_context',  # Add this line
+                'documents.context_processors.user_profile_context',  # Add this line
+                'custom_admin_dashboard.context_processors.profile_image',
             ],
         },
     },

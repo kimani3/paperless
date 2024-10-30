@@ -117,7 +117,6 @@ def admin_complete_profile(request):
                 profile.contact_number,
                 profile.department,
                 profile.profile_image,  # Ensure the image is uploaded
-                profile.created_by  # Ensure the creator is set
             ])
             profile.is_profile_complete = all_fields_filled  # Update the completion status
             
@@ -404,31 +403,31 @@ def admin_pending_users(request):
         user = get_object_or_404(User, id=user_id)
 
         if action == 'activate':
-            # Assign department if provided
-            profile = get_object_or_404(Profile, user=user)  # Fetch the user's profile
-            
+            # Fetch or create the user's profile if it doesn't exist
+            profile, created = Profile.objects.get_or_create(user=user)
+
             if department_id:
                 department = get_object_or_404(Department, id=department_id)
                 profile.department = department  # Assign the department to the profile
             
             user.is_active = True
             user.save()  # Activate the user
-            profile.save()  # Save the profile
+            profile.save()  # Save the profile with updated department if provided
 
             # Generate the login URL
-            login_url = request.build_absolute_uri(reverse('documents:login'))  # Update to match your login URL name
+            login_url = request.build_absolute_uri(reverse('documents:login'))  # Update this to match your login URL name
 
             # Send activation email
             send_mail(
                 'Your Account Has Been Activated',
-                f'Hello {user.username},\n\nYour account has been activated and you have been assigned to the {department.name if department_id else "No department"} department.\n\n'
+                f'Hello {user.username},\n\nYour account has been activated and you have been assigned to the {profile.department.name if profile.department else "No department"} department.\n\n'
                 f'You can log in using the following link:\n{login_url}',
                 settings.EMAIL_HOST_USER,
                 [user.email],
                 fail_silently=False,
             )
 
-            messages.success(request, f"{user.username} has been activated and assigned to {department.name if department_id else 'No department'}.")
+            messages.success(request, f"{user.username} has been activated and assigned to {profile.department.name if profile.department else 'No department'}.")
         
         elif action == 'deny':
             # Send denial email

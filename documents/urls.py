@@ -19,6 +19,5 @@ urlpatterns = [
     path('resend_verification_code/', views.resend_verification_code, name='resend_verification_code'),  # New URL
     
     # Add profile completion URLs
-    path('profile-image/<int:user_id>/', views.serve_profile_image, name='serve_profile_image'),
     path('complete_profile/', views.complete_profile, name='complete_profile'),
 ]

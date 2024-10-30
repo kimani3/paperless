@@ -1,12 +1,15 @@
-<!-- admin_pending_users.html -->
-{% extends 'admin_base.html' %} {% block content %}
+{% extends 'admin_base.html' %}
+
+{% block content %}
 <h2>Manage Pending Users</h2>
+
 <!-- Table Structure -->
 <table class="table">
   <thead>
     <tr>
       <th>Username</th>
       <th>Email</th>
+      <th>Department</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -16,7 +19,8 @@
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
       <td>
-        <form method="post" style="display: inline">
+        <!-- Department Selection Dropdown -->
+        <form method="post" style="display: inline;">
           {% csrf_token %}
           <input type="hidden" name="user_id" value="{{ user.id }}" />
           <select name="department_id" required>
@@ -25,11 +29,15 @@
             <option value="{{ department.id }}">{{ department.name }}</option>
             {% endfor %}
           </select>
+      </td>
+      <td>
+          <!-- Action Buttons -->
           <button
             type="submit"
             name="action"
             value="activate"
-            class="btn-action btn-success"
+            class="btn btn-success"
+            onclick="return confirm('Are you sure you want to activate {{ user.username }}?');"
           >
             Activate
           </button>
@@ -37,12 +45,17 @@
             type="submit"
             name="action"
             value="deny"
-            class="btn-action btn-danger"
+            class="btn btn-danger"
+            onclick="return confirm('Are you sure you want to deny {{ user.username }}\'s registration?');"
           >
             Deny
           </button>
-        </form>
+        </form> <!-- Correct placement of closing </form> -->
       </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4" class="text-center">No pending users found.</td>
     </tr>
     {% endfor %}
   </tbody>

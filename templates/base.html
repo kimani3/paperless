@@ -1,4 +1,3 @@
-<!--- base.html template -->
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
@@ -62,9 +61,9 @@
         </ul>
         <a href="#">
           <div class="profile">
-            {% if profile_data.profile_image %}
+            {% if profile_image %}
             <img
-              src="{% url 'documents:serve_profile_image' user.id %}"
+              src="{{ profile_image }}"
               alt="profile picture"
               width="50"
               height="50"
@@ -98,14 +97,19 @@
           <div class="sidebar-list">
             <nav>
               <ul>
-                {% if user.is_authenticated and user.department %}
+                {% if user.is_authenticated and user.profile.department %}
                 <a
-                  href="{% url 'documents:department_detail' user.department.id %}"
+                  href="{% url 'documents:department_detail' user.profile.department.id %}"
                 >
                   <div class="sidebar-items">
-                    <li>{{ user.department.name }}</li>
+                    <li>{{ user.profile.department.name }}</li>
                   </div>
                 </a>
+                {% else %}
+                <li>
+                  You are not logged in.
+                  <!-- Optional: Message for non-authenticated users -->
+                </li>
                 {% endif %}
               </ul>
             </nav>
@@ -163,8 +167,6 @@
         <p>COPYRIGHT | SAMUEL 2024 | +254 712 345 678, +245 787 654 321</p>
       </div>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const alerts = document.querySelectorAll(".alert");

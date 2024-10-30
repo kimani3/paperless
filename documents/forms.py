@@ -82,7 +82,7 @@ class ProfileCompletionForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['nationalID', 'department', 'contact_number']
+        fields = ['nationalID', 'contact_number']
         widgets = {
             'profile_image': forms.ClearableFileInput(attrs={
                 'accept': 'image/*'
