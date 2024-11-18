@@ -44,11 +44,11 @@ def admin_dashboard(request):
         return redirect('custom_admin_dashboard:admin_dashboard')  # Adjust this redirect as necessary
 
     # Calculate the profile completion percentage
-    profile_completion_percentage = profile.completion_percentage()  # Use the model method
+    # profile_completion_percentage = profile.completion_percentage()  # Use the model method
 
     # Render the dashboard template with the profile completion percentage
     return render(request, 'custom_admin_dashboard/admin_dashboard.html', {
-        'profile_completion_percentage': profile_completion_percentage,
+        
         # Include other context variables as needed
     })
 

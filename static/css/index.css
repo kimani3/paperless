@@ -23,7 +23,7 @@ header {
   align-items: center;
   justify-content: space-around;
   padding: 0.5rem;
-  background-color: hsl(194, 32%, 42%);
+  background-color: hsl(155, 81%, 37%);
   position: fixed;
   font-size: 1.2rem;
   top: 0;
@@ -173,7 +173,7 @@ header ul li:hover {
 
 .sidebar {
   color: white;
-  background-color: hsl(194, 32%, 42%);
+  background-color: hsl(155, 62%, 36%);
   position: fixed;
   width: 16rem;
   top: 3.5rem;

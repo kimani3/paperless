@@ -41,15 +41,6 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-    def completion_percentage(self):
-        total_fields = 5  # Adjust this if more fields are added
-        filled_fields = sum(1 for field in [self.nationalID, self.contact_number, self.department] if field)
-        return (filled_fields / total_fields) * 100
-
-    def save(self, *args, **kwargs):
-        percentage = self.completion_percentage()
-        self.is_profile_complete = percentage >= 100
-        super(Profile, self).save(*args, **kwargs)
 
 
 

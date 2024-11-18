@@ -188,11 +188,11 @@ def complete_profile(request):
     else:
         form = ProfileCompletionForm(instance=profile)
 
-    profile_completion_percentage = profile.completion_percentage()
+    # profile_completion_percentage = profile.completion_percentage()
 
     context = {
         'form': form,
-        'profile_completion_percentage': profile_completion_percentage,
+        # 'profile_completion_percentage': profile_completion_percentage,
     }
     context.update(profile_data)
 
@@ -204,7 +204,6 @@ def home(request):
 
     try:
         profile = Profile.objects.get(user=request.user)
-        profile_completion_percentage = profile.completion_percentage()
         user_department = profile.department
     except Profile.DoesNotExist:
         messages.error(request, "Profile not found.")
@@ -214,7 +213,6 @@ def home(request):
 
     context = {
         'profile_data': profile,
-        'profile_completion_percentage': profile_completion_percentage,
         'user_department_name': user_department_name,
     }
     context.update(profile_data)
@@ -288,7 +286,8 @@ def upload_document(request, department_id=None, folder_id=None):
 
                 document.save()
                 messages.success(request, 'Document uploaded successfully.')
-                return redirect('documents:folder_detail', folder.id if folder_id else folder.id)
+                return redirect('documents:folder_detail', department_id=department_id, folder_id=folder.id)
+
             else:
                 messages.error(request, 'No file uploaded.')
         else:
@@ -325,7 +324,7 @@ def create_folder(request):
     return render(request, 'documents/create_folder.html', context)
 
 @login_required
-def folder_detail(request, folder_id):
+def folder_detail(request,department_id, folder_id):
     profile_data = get_profile_data(request.user)
     folder = get_object_or_404(Folder, id=folder_id)
     documents = Document.objects.filter(folder=folder)
@@ -333,6 +332,7 @@ def folder_detail(request, folder_id):
     context = {
         'documents': documents,
         'folder': folder,
+        'department_id': department_id,
     }
     context.update(profile_data)
 

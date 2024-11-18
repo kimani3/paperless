@@ -1,17 +1,17 @@
-<!-- templates/documents/document_details.html -->
-{% extends 'base.html' %} {% load static %} {% block extra_css %}
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/svg.css' %}" />
 <link rel="stylesheet" href="{% static 'css/folders.css' %}" />
 <link rel="stylesheet" href="{% static 'css/files.css' %}" />
 {% endblock %}
-<!-- prettier-ignore-start -->
 {% block title %} {{ department.name }} {% endblock %}
-<!-- prettier-ignore-start -->
 {% block content %}
+
+
 
 <!-- Check if folders exist -->
 {% if folders %}
-
 <h3>Folders</h3>
 <!-- Button to create a folder -->
 <div style="text-align: right">
@@ -22,7 +22,7 @@
 
 <div class="folder-container">
   {% for folder in folders %}
-  <a href="{% url 'documents:folder_detail' folder.id %}">
+  <a href="{% url 'documents:folder_detail' department.id folder.id %}">
     <div class="folder-items">
       {% if folder.is_empty %}
       <img
@@ -49,7 +49,6 @@
 </div>
 {% else %}
 <!-- Content when no folders are available -->
-<!-- Button to create a folder -->
 <div style="text-align: right">
   <a href="{% url 'documents:create_folder' %}" class="btn btn-primary">
     Create Folder
@@ -63,4 +62,5 @@
     </div>
   </div>
 </div>
-{% endif %} {% endblock %}
+{% endif %}
+{% endblock %}
